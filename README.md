@@ -12,12 +12,14 @@ Before you start, take a look at the architecture to know what you are getting i
 
 ```mermaid
 flowchart TD
-  subgraph Frontend [Frontend - Next.js App]
+  %% FRONTEND LAYER
+  subgraph Frontend [Frontend – Next.js App]
     A[Home Page Sections]
     B[Chatbot UI]
     C[VisitorTracker Script]
   end
 
+  %% API ROUTES
   subgraph API [Serverless API Routes]
     D1["/api/contact/email"]
     E1["/api/contact/meeting"]
@@ -26,6 +28,7 @@ flowchart TD
     H1["/api/track-button-click"]
   end
 
+  %% BACKEND SERVICES
   subgraph Services
     I[(Firebase Firestore)]
     J[(OpenAI API)]
@@ -33,11 +36,15 @@ flowchart TD
     L[(Resend Email API)]
   end
 
+  %% FRONTEND TO API CONNECTIONS
   A --> D1
   A --> E1
   A --> F1
-  C --> G1
   A --> H1
+  C --> G1
+  B --> F1
+
+  %% API TO SERVICE CONNECTIONS
   D1 --> L
   E1 --> K
   F1 --> J
