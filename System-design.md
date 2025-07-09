@@ -12,11 +12,11 @@ flowchart TD
   end
 
   subgraph API [Serverless API Routes]
-    D[/api/contact/email]
-    E[/api/contact/meeting]
-    F[/api/chatbot/message]
-    G[/api/track-visitor-location]
-    H[/api/track-button-click]
+    D1["/api/contact/email"]
+    E1["/api/contact/meeting"]
+    F1["/api/chatbot/message"]
+    G1["/api/track-visitor-location"]
+    H1["/api/track-button-click"]
   end
 
   subgraph Services
@@ -26,16 +26,16 @@ flowchart TD
     L[(Resend Email API)]
   end
 
-  A --> D
-  A --> E
-  A --> F
-  C --> G
-  A --> H
-  D --> L
-  E --> K
-  F --> J
-  G --> I
-  H --> I
+  A --> D1
+  A --> E1
+  A --> F1
+  C --> G1
+  A --> H1
+  D1 --> L
+  E1 --> K
+  F1 --> J
+  G1 --> I
+  H1 --> I
 ```
 
 </details>
