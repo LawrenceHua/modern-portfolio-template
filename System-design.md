@@ -1,9 +1,9 @@
-System Design
+## 🧠 System Design
 
-<details> <summary>Click to view Mermaid diagram code</summary>
-mermaid
-Copy
-Edit
+<details>
+<summary>Click to view Mermaid diagram code</summary>
+
+```mermaid
 flowchart TD
   subgraph Frontend [Frontend - Next.js App]
     A[Home Page Sections]
@@ -36,4 +36,6 @@ flowchart TD
   F --> J
   G --> I
   H --> I
+```
+
 </details>
