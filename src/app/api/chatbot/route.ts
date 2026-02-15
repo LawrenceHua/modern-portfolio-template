@@ -8,8 +8,10 @@ import {
   orderBy,
   limit,
   getDocs,
+  addDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import OpenAI from "openai";
 
 // Firebase configuration
 const firebaseConfig = {
@@ -350,4 +352,121 @@ function calculateSessionLengthDistribution(sessionMessages: Map<string, number>
       count => count >= min && count <= max
     ).length,
   }));
+}
+
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// System prompt for the chatbot
+const SYSTEM_PROMPT = `You are an AI assistant for Lawrence Hua, an AI Product Manager and Startup Founder. 
+
+Key information about Lawrence:
+- AI Product Manager with technical background in Computer Science (University of Florida) and Information Systems Management (Carnegie Mellon University)
+- Currently building Expired Solutions, an AI platform using computer vision and LLMs to reduce grocery waste by 20%
+- Previously at GRUBBRR: Reduced onboarding time by 60%, shipped AI recommendation engine in 30 days
+- Previously at Bath & Body Works: Built LLM tool that saved teams 18 hours per week
+- Technical skills: Python, ML models, computer vision, GPT integrations, data strategy
+- Product skills: Roadmap planning, A/B testing, cross-functional leadership
+
+Your role:
+1. Answer questions about Lawrence's experience, skills, and projects
+2. Be friendly, professional, and conversational
+3. If asked about scheduling a meeting, guide them to use the meeting scheduling feature
+4. Keep responses concise (2-4 sentences for simple questions, longer for complex ones)
+5. If you don't know something specific, be honest and suggest they contact Lawrence directly
+
+Tone: Professional but warm, enthusiastic about AI and product management.`;
+
+export async function POST(request: NextRequest) {
+  try {
+    const formData = await request.formData();
+    const message = formData.get("message") as string;
+    const historyJson = formData.get("history") as string;
+
+    if (!message) {
+      return NextResponse.json(
+        { error: "Message is required" },
+        { status: 400 }
+      );
+    }
+
+    // Parse conversation history
+    let history: any[] = [];
+    try {
+      history = JSON.parse(historyJson || "[]");
+    } catch (e) {
+      console.error("Failed to parse history:", e);
+    }
+
+    // Check for special commands
+    const lowerMessage = message.toLowerCase().trim();
+    
+    // Easter egg: Myley
+    if (lowerMessage.includes("myley") || lowerMessage.includes("girlfriend")) {
+      return NextResponse.json({
+        response: "🔐 That's a special topic! Please enter the password to learn more about Myley.",
+        needsPassword: true,
+        isMyleyResponse: true,
+      });
+    }
+
+    // Check for password
+    if (lowerMessage === "forever" || lowerMessage === "myley forever") {
+      return NextResponse.json({
+        response: "❤️ Correct! Lawrence and Myley have been together since 2020. She's his biggest supporter and the reason he pushes to be better every day. They love exploring new restaurants, traveling, and binge-watching shows together!",
+        isMyleyResponse: true,
+        needsPassword: false,
+      });
+    }
+
+    // Meeting scheduling command
+    if (lowerMessage === "/meeting" || lowerMessage.includes("schedule a meeting") || lowerMessage.includes("book a call")) {
+      return NextResponse.json({
+        response: "I'd be happy to help you schedule a meeting with Lawrence! 📅 Please use the calendar picker that should appear, or visit: https://calendly.com/lawrencehua",
+        showCalendar: true,
+      });
+    }
+
+    // Contact/message command
+    if (lowerMessage === "/message" || lowerMessage.includes("send a message") || lowerMessage.includes("contact")) {
+      return NextResponse.json({
+        response: "You can reach Lawrence directly via the contact form on this site or through LinkedIn. Would you like me to guide you to the contact section?",
+      });
+    }
+
+    // Prepare messages for OpenAI
+    const messages = [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...history.map((msg: any) => ({
+        role: msg.role,
+        content: msg.content,
+      })),
+      { role: "user", content: message },
+    ];
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: messages as any,
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+
+    const response = completion.choices[0]?.message?.content || "I'm sorry, I couldn't process that request. Please try again.";
+
+    return NextResponse.json({
+      response,
+      isMyleyResponse: false,
+      needsPassword: false,
+    });
+
+  } catch (error) {
+    console.error("Error in chatbot POST:", error);
+    return NextResponse.json(
+      { error: "Failed to process message", response: "I'm having trouble connecting right now. Please try again in a moment!" },
+      { status: 500 }
+    );
+  }
 } 
