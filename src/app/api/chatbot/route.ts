@@ -354,10 +354,19 @@ function calculateSessionLengthDistribution(sessionMessages: Map<string, number>
   }));
 }
 
-// Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI lazily to avoid build-time errors
+let openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error("OPENAI_API_KEY not set");
+      return null;
+    }
+    openai = new OpenAI({ apiKey });
+  }
+  return openai;
+}
 
 // System prompt for the chatbot
 const SYSTEM_PROMPT = `You are an AI assistant for Lawrence Hua, an AI Product Manager and Startup Founder. 
@@ -447,7 +456,15 @@ export async function POST(request: NextRequest) {
     ];
 
     // Call OpenAI API
-    const completion = await openai.chat.completions.create({
+    const openaiClient = getOpenAI();
+    if (!openaiClient) {
+      return NextResponse.json(
+        { error: "OpenAI not configured", response: "Chatbot is temporarily unavailable. Please try again later!" },
+        { status: 503 }
+      );
+    }
+    
+    const completion = await openaiClient.chat.completions.create({
       model: "gpt-4o-mini",
       messages: messages as any,
       max_tokens: 500,

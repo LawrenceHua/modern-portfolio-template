@@ -23,7 +23,11 @@ const nextConfig = {
   },
   // For App Router API routes (which we're using)
   experimental: {
-    serverComponentsExternalPackages: ["pdf-parse"],
+    serverComponentsExternalPackages: ["pdf-parse", "openai"],
+  },
+  // Ensure env vars are available at runtime
+  env: {
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
 };
 
