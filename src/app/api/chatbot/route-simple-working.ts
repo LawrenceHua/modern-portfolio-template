@@ -1,16 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
-// Test basic functionality first
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Initialize OpenAI lazily to avoid build-time errors
+let openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error("OPENAI_API_KEY not set");
+      return null;
+    }
+    openai = new OpenAI({ apiKey });
+  }
+  return openai;
+}
 
 export async function GET() {
+  const openaiClient = getOpenAI();
   return NextResponse.json({
     success: true,
     message: "Simplified chatbot GET endpoint is working",
-    hasOpenAI: !!process.env.OPENAI_API_KEY,
+    hasOpenAI: !!openaiClient,
     timestamp: new Date().toISOString(),
   });
 }
