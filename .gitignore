@@ -59,3 +59,5 @@ core
 # Test results
 test-results-*.txt
 *.log
+# Local Netlify folder
+.netlify

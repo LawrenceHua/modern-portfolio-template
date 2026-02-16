@@ -1,0 +1,61 @@
+{
+  "enabled": true,
+  "budget_limit_usd": 500,
+  "budget_alert_threshold_usd": 400,
+  "slack_channel": "C0AEWRXU9PY",
+  "jobs": {
+    "master_progress_monitor": {
+      "enabled": true,
+      "schedule": "*/30 * * * *",
+      "priority": "critical",
+      "max_cost_per_run": 0.5,
+      "description": "Consolidated monitor for all projects: ES iOS readiness, GRUBBRR sprint progress, API health, and daily summary. Posts unified status to #ai-worker-chat every 30 minutes.",
+      "checks": [
+        "Check ES API health at /health endpoint",
+        "Check iOS app store readiness status",
+        "Check GRUBBRR bug sprint progress",
+        "Check n8n workflow status",
+        "Update daily summary if 9 AM",
+        "Alert on any critical issues"
+      ]
+    },
+    "hourly_test_monitor": {
+      "enabled": true,
+      "schedule": "0 * * * *",
+      "priority": "high",
+      "max_cost_per_run": 0.25,
+      "description": "Hourly health checks for all projects. Tests API endpoints, validates iOS builds, checks website availability, and verifies n8n workflows. Logs results and alerts on failures.",
+      "tests": [
+        "ES API health check (expired-v2-dev-backend-app.azurewebsites.net)",
+        "iOS app build validation",
+        "lawrencehua.com website check",
+        "expiredsolutions.com check",
+        "n8n workflow health",
+        "Documentation site check"
+      ]
+    },
+    "daily_summary_generator": {
+      "enabled": true,
+      "schedule": "0 9 * * *",
+      "priority": "medium",
+      "max_cost_per_run": 1.0,
+      "description": "Comprehensive daily summary at 9 AM. Reviews all project progress, updates memory files, generates reports, and posts consolidated update to #ai-worker-chat. Includes ES status, GRUBBRR sprint progress, and system health.",
+      "tasks": [
+        "Review ES project status and blockers",
+        "Review GRUBBRR bug sprint progress",
+        "Update memory/YYYY-MM-DD.md daily log",
+        "Update MEMORY.md with key achievements",
+        "Generate cost report",
+        "Post summary to #ai-worker-chat"
+      ]
+    }
+  },
+  "last_run": {},
+  "total_cost": 0,
+  "metadata": {
+    "created": "2026-02-15T16:15:00Z",
+    "last_updated": "2026-02-16T15:00:00Z",
+    "version": "2.0.0",
+    "consolidation_note": "Consolidated from 7 jobs to 3 jobs: master_progress_monitor (merged ios_readiness + grubbrr_check + master_monitor), hourly_test_monitor (merged ios_testing + job_monitor), daily_summary_generator (merged website_worker + docs_deploy)"
+  }
+}
