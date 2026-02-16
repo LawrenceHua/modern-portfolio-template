@@ -36,11 +36,23 @@ if (typeof window === "undefined") {
   }
 }
 
-const openaiApiKey = process.env.OPENAI_API_KEY;
-const openai = openaiApiKey ? new OpenAI({ apiKey: openaiApiKey }) : null;
+// Initialize OpenAI lazily to avoid build-time errors
+let openai: OpenAI | null = null;
+function getOpenAI() {
+  if (!openai) {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.error("OPENAI_API_KEY not set");
+      return null;
+    }
+    openai = new OpenAI({ apiKey });
+  }
+  return openai;
+}
 
 export async function POST(request: NextRequest) {
-  if (!db || !openai) {
+  const openaiClient = getOpenAI();
+  if (!db || !openaiClient) {
     return NextResponse.json(
       { error: "Analytics assistant not available" },
       { status: 500 }
@@ -220,12 +232,13 @@ USER QUERY: "${userQuery}"
 
 Analyze the data and provide a comprehensive, insightful response.`;
 
-  if (!openai) {
+  const openaiClient = getOpenAI();
+  if (!openaiClient) {
     return "Analytics assistant is not available right now.";
   }
 
   try {
-    const completion = await openai.chat.completions.create({
+    const completion = await openaiClient.chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
