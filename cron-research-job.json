@@ -1,0 +1,59 @@
+{
+  "name": "Random Deep Research - Topic Explorer",
+  "description": "Every 2-3 hours, run Deep Research on 10 topics from the research queue",
+  "schedule": {
+    "kind": "cron",
+    "expr": "0 */3 * * *",
+    "tz": "America/New_York"
+  },
+  "payload": {
+    "kind": "agentTurn",
+    "message": "**RANDOM DEEP RESEARCH SESSION**
+
+Read `RESEARCH_QUEUE.md` and identify the top 10 uncompleted topics.
+
+For each topic:
+1. Run comprehensive web research (Brave search)
+2. Use Deep Research (Perplexity or equivalent) for in-depth analysis
+3. Document findings in `memory/research/YYYY-MM-DD-{topic-slug}.md`
+4. Update `RESEARCH_QUEUE.md` to mark topic as completed
+
+**Research Depth:**
+- At least 5 sources per topic
+- Include cost analysis where relevant
+- Include real-world examples/case studies
+- Include pros/cons comparisons
+
+**Output Format:**
+```markdown
+# Research: [Topic Name]
+
+## Executive Summary
+[2-3 sentence overview]
+
+## Key Findings
+- Finding 1
+- Finding 2
+- Finding 3
+
+## Cost Analysis
+[If applicable]
+
+## Recommendations
+[Actionable insights]
+
+## Sources
+- [Source 1](url)
+- [Source 2](url)
+```
+
+Process all 10 topics in this session. Be thorough but efficient."
+  },
+  "delivery": {
+    "mode": "announce",
+    "channel": "slack",
+    "to": "C0AEWRXU9PY"
+  },
+  "sessionTarget": "isolated",
+  "enabled": true
+}

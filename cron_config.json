@@ -48,6 +48,22 @@
         "Generate cost report",
         "Post summary to #ai-worker-chat"
       ]
+    },
+    "random_deep_research": {
+      "enabled": true,
+      "schedule": "0 */3 * * *",
+      "priority": "medium",
+      "max_cost_per_run": 5.0,
+      "description": "Every 3 hours, run Deep Research on 10 topics from RESEARCH_QUEUE.md. Topics include architecture decisions, best practices, technology comparisons. Results saved to memory/research/. Keeps research backlog moving continuously.",
+      "tasks": [
+        "Read RESEARCH_QUEUE.md for uncompleted topics",
+        "Select top 10 topics",
+        "Run web research on each",
+        "Run Deep Research on each",
+        "Save findings to memory/research/",
+        "Update RESEARCH_QUEUE.md",
+        "Post summary to #ai-worker-chat"
+      ]
     }
   },
   "last_run": {},
