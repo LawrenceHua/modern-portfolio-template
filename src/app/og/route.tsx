@@ -106,7 +106,7 @@ export async function GET() {
                 backdropFilter: 'blur(10px)',
               }}
             >
-              Learn more about {siteConfig.name}
+              {`Learn more about ${siteConfig.name}`}
             </div>
           </div>
 
