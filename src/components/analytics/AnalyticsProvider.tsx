@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, {
   createContext,
@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
-} from "react";
+} from 'react';
 import {
   collection,
   getDocs,
@@ -17,33 +17,33 @@ import {
   serverTimestamp,
   addDoc,
   where,
-} from "firebase/firestore";
-import { analyticsCacheManager } from "../../lib/analytics-cache";
+} from 'firebase/firestore';
+import { analyticsCacheManager } from '../../lib/analytics-cache';
 import {
   AnalyticsExporter,
   loadAnalyticsFromFile,
   type ExportedAnalytics,
-} from "../../lib/analytics-export";
+} from '../../lib/analytics-export';
 
 // New Firebase Collections (v2.0 - reset from scratch)
-export const ANALYTICS_COLLECTIONS = {
+const ANALYTICS_COLLECTIONS = {
   // Core tracking
-  SESSIONS_V2: "analytics_sessions_v2",
-  PAGE_VIEWS_V2: "analytics_page_views_v2",
-  CHAT_MESSAGES_V2: "analytics_chat_messages_v2",
+  SESSIONS_V2: 'analytics_sessions_v2',
+  PAGE_VIEWS_V2: 'analytics_page_views_v2',
+  CHAT_MESSAGES_V2: 'analytics_chat_messages_v2',
 
   // Interaction tracking
-  BUTTON_CLICKS_V2: "analytics_button_clicks_v2",
-  TOUR_INTERACTIONS_V2: "analytics_tour_interactions_v2",
+  BUTTON_CLICKS_V2: 'analytics_button_clicks_v2',
+  TOUR_INTERACTIONS_V2: 'analytics_tour_interactions_v2',
 
   // Device & Location
-  DEVICE_ANALYTICS_V2: "analytics_device_info_v2",
-  GEO_ANALYTICS_V2: "analytics_geo_data_v2",
-  VISITOR_LOCATIONS_V2: "analytics_visitor_locations_v2",
+  DEVICE_ANALYTICS_V2: 'analytics_device_info_v2',
+  GEO_ANALYTICS_V2: 'analytics_geo_data_v2',
+  VISITOR_LOCATIONS_V2: 'analytics_visitor_locations_v2',
 
   // Performance tracking
-  PERFORMANCE_METRICS_V2: "analytics_performance_v2",
-  USER_FLOWS_V2: "analytics_user_flows_v2",
+  PERFORMANCE_METRICS_V2: 'analytics_performance_v2',
+  USER_FLOWS_V2: 'analytics_user_flows_v2',
 };
 
 // Analytics Data Types
@@ -56,7 +56,7 @@ export interface ChatSession {
   messageCount: number;
   totalDuration: number;
   userAgent: string;
-  deviceType: "Mobile" | "Desktop" | "Tablet" | "Unknown";
+  deviceType: 'Mobile' | 'Desktop' | 'Tablet' | 'Unknown';
   location: {
     country: string;
     region: string;
@@ -71,7 +71,7 @@ export interface ChatSession {
 export interface ChatMessage {
   id: string;
   sessionId: string;
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
   messageLength: number;
@@ -97,7 +97,7 @@ export interface ButtonClick {
 export interface TourInteraction {
   id: string;
   tourStep: string;
-  action: "viewed" | "clicked" | "skipped" | "completed";
+  action: 'viewed' | 'clicked' | 'skipped' | 'completed';
   sessionId: string;
   timestamp: Date;
   timeOnStep: number;
@@ -149,7 +149,7 @@ export interface AnalyticsCache {
   version: string;
 }
 
-export interface AnalyticsContextType {
+interface AnalyticsContextType {
   // Data
   chatSessions: ChatSession[];
   buttonClicks: ButtonClick[];
@@ -170,13 +170,13 @@ export interface AnalyticsContextType {
   // Functions
   fetchAllData: () => Promise<void>;
   trackButtonClick: (
-    data: Omit<ButtonClick, "id" | "timestamp">
+    data: Omit<ButtonClick, 'id' | 'timestamp'>
   ) => Promise<void>;
   trackTourInteraction: (
-    data: Omit<TourInteraction, "id" | "timestamp">
+    data: Omit<TourInteraction, 'id' | 'timestamp'>
   ) => Promise<void>;
   trackVisitorLocation: (
-    data: Omit<VisitorLocation, "id" | "timestamp">
+    data: Omit<VisitorLocation, 'id' | 'timestamp'>
   ) => Promise<void>;
   refreshData: () => Promise<void>;
 
@@ -198,7 +198,7 @@ const AnalyticsContext = createContext<AnalyticsContextType | null>(null);
 export const useAnalytics = () => {
   const context = useContext(AnalyticsContext);
   if (!context) {
-    throw new Error("useAnalytics must be used within an AnalyticsProvider");
+    throw new Error('useAnalytics must be used within an AnalyticsProvider');
   }
   return context;
 };
@@ -232,18 +232,18 @@ export default function AnalyticsProvider({
     setLoading(true);
 
     try {
-      console.log("🔄 Fetching analytics data with cache optimization...");
+      console.log('🔄 Fetching analytics data with cache optimization...');
 
       // Check cache first and get valid cached data
-      const cachedSessions = analyticsCacheManager.getCachedData("sessions");
-      const cachedMessages = analyticsCacheManager.getCachedData("messages");
-      const cachedButtons = analyticsCacheManager.getCachedData("buttonClicks");
+      const cachedSessions = analyticsCacheManager.getCachedData('sessions');
+      const cachedMessages = analyticsCacheManager.getCachedData('messages');
+      const cachedButtons = analyticsCacheManager.getCachedData('buttonClicks');
       const cachedTours =
-        analyticsCacheManager.getCachedData("tourInteractions");
+        analyticsCacheManager.getCachedData('tourInteractions');
       const cachedDevices =
-        analyticsCacheManager.getCachedData("deviceAnalytics");
+        analyticsCacheManager.getCachedData('deviceAnalytics');
       const cachedVisitors =
-        analyticsCacheManager.getCachedData("visitorLocations");
+        analyticsCacheManager.getCachedData('visitorLocations');
 
       // Check if we have any cached data at all (regardless of validity)
       const hasAnyCache =
@@ -256,7 +256,7 @@ export default function AnalyticsProvider({
 
       if (hasAnyCache) {
         console.log(
-          "📦 Found cached data - displaying immediately (PURE CACHE MODE)"
+          '📦 Found cached data - displaying immediately (PURE CACHE MODE)'
         );
 
         // Process cached data
@@ -304,7 +304,7 @@ export default function AnalyticsProvider({
 
         setLoading(false);
         console.log(
-          "🚀 PURE CACHE MODE: Showing cached data only. Use manual buttons to fetch from Firebase."
+          '🚀 PURE CACHE MODE: Showing cached data only. Use manual buttons to fetch from Firebase.'
         );
         return;
       }
@@ -315,7 +315,7 @@ export default function AnalyticsProvider({
       );
       setLoading(false);
     } catch (error) {
-      console.error("Error fetching analytics data:", error);
+      console.error('Error fetching analytics data:', error);
       setLoading(false);
     }
   }, [db]);
@@ -326,7 +326,7 @@ export default function AnalyticsProvider({
 
     try {
       console.log(
-        "🔄 Fetching ONLY incremental data since last cache update..."
+        '🔄 Fetching ONLY incremental data since last cache update...'
       );
       setLoading(true);
 
@@ -336,7 +336,7 @@ export default function AnalyticsProvider({
       // Find the oldest cache timestamp to use as our cutoff
       let oldestCacheTime = Date.now();
       Object.keys(cacheStats).forEach((key) => {
-        if (key !== "version" && cacheStats[key].lastUpdated) {
+        if (key !== 'version' && cacheStats[key].lastUpdated) {
           const cacheTime = new Date(cacheStats[key].lastUpdated).getTime();
           if (cacheTime < oldestCacheTime) {
             oldestCacheTime = cacheTime;
@@ -359,14 +359,14 @@ export default function AnalyticsProvider({
       // Smart incremental fetch function with reasonable limits
       const fetchNewDataOnly = async (
         collectionName: string,
-        cacheKey: keyof Omit<AnalyticsCache, "version">,
-        timestampField: string = "timestamp"
+        cacheKey: keyof Omit<AnalyticsCache, 'version'>,
+        timestampField: string = 'timestamp'
       ) => {
         // Use optimized limits for incremental updates
         const incrementalQuery = query(
           collection(db, collectionName),
-          where(timestampField, ">", cutoffTime),
-          orderBy(timestampField, "desc"),
+          where(timestampField, '>', cutoffTime),
+          orderBy(timestampField, 'desc'),
           limit(300) // Optimized from 500 to 300 for better performance
         );
 
@@ -386,8 +386,8 @@ export default function AnalyticsProvider({
       // Fetch sessions with special handling and higher limits
       const newSessionsQuery = query(
         collection(db, ANALYTICS_COLLECTIONS.SESSIONS_V2),
-        where("startTime", ">", cutoffTime),
-        orderBy("startTime", "desc"),
+        where('startTime', '>', cutoffTime),
+        orderBy('startTime', 'desc'),
         limit(150) // Optimized from 200 to 150 for better performance
       );
       const sessionsSnap = await getDocs(newSessionsQuery);
@@ -401,22 +401,22 @@ export default function AnalyticsProvider({
       // Fetch other collections with higher limits
       const [newMessages, newButtons, newTours, newDevices, newVisitors] =
         await Promise.all([
-          fetchNewDataOnly(ANALYTICS_COLLECTIONS.CHAT_MESSAGES_V2, "messages"),
+          fetchNewDataOnly(ANALYTICS_COLLECTIONS.CHAT_MESSAGES_V2, 'messages'),
           fetchNewDataOnly(
             ANALYTICS_COLLECTIONS.BUTTON_CLICKS_V2,
-            "buttonClicks"
+            'buttonClicks'
           ),
           fetchNewDataOnly(
             ANALYTICS_COLLECTIONS.TOUR_INTERACTIONS_V2,
-            "tourInteractions"
+            'tourInteractions'
           ),
           fetchNewDataOnly(
             ANALYTICS_COLLECTIONS.DEVICE_ANALYTICS_V2,
-            "deviceAnalytics"
+            'deviceAnalytics'
           ),
           fetchNewDataOnly(
             ANALYTICS_COLLECTIONS.VISITOR_LOCATIONS_V2,
-            "visitorLocations"
+            'visitorLocations'
           ),
         ]);
 
@@ -432,23 +432,23 @@ export default function AnalyticsProvider({
 
       // Update cache with only new data (incremental merge)
       if (newSessions.length > 0) {
-        analyticsCacheManager.updateCache("sessions", newSessions, true);
+        analyticsCacheManager.updateCache('sessions', newSessions, true);
       }
       if (newMessages.length > 0) {
-        analyticsCacheManager.updateCache("messages", newMessages, true);
+        analyticsCacheManager.updateCache('messages', newMessages, true);
       }
       if (newButtons.length > 0) {
-        analyticsCacheManager.updateCache("buttonClicks", newButtons, true);
+        analyticsCacheManager.updateCache('buttonClicks', newButtons, true);
       }
       if (newTours.length > 0) {
-        analyticsCacheManager.updateCache("tourInteractions", newTours, true);
+        analyticsCacheManager.updateCache('tourInteractions', newTours, true);
       }
       if (newDevices.length > 0) {
-        analyticsCacheManager.updateCache("deviceAnalytics", newDevices, true);
+        analyticsCacheManager.updateCache('deviceAnalytics', newDevices, true);
       }
       if (newVisitors.length > 0) {
         analyticsCacheManager.updateCache(
-          "visitorLocations",
+          'visitorLocations',
           newVisitors,
           true
         );
@@ -468,7 +468,7 @@ export default function AnalyticsProvider({
         `✅ Incremental update complete! Added ${totalNewRecords} new records to cache.`
       );
     } catch (error) {
-      console.error("Error in incremental update:", error);
+      console.error('Error in incremental update:', error);
     } finally {
       setLoading(false);
     }
@@ -478,29 +478,29 @@ export default function AnalyticsProvider({
     if (!db) return;
 
     try {
-      console.log("🔄 Fetching incremental updates...");
+      console.log('🔄 Fetching incremental updates...');
 
       // Determine if we need incremental or full fetch
-      const needsFullRefresh = !analyticsCacheManager.isCacheValid("sessions");
+      const needsFullRefresh = !analyticsCacheManager.isCacheValid('sessions');
       const sessionsLimit = needsFullRefresh ? 500 : 200; // Optimized limits for performance
 
       // Fetch sessions
       let sessionsQuery = query(
         collection(db, ANALYTICS_COLLECTIONS.SESSIONS_V2),
-        orderBy("startTime", "desc"),
+        orderBy('startTime', 'desc'),
         limit(sessionsLimit)
       );
 
       // Add startAfter for incremental if we have cached data
       if (!needsFullRefresh) {
-        const lastSessionId = analyticsCacheManager.getLastDocId("sessions");
+        const lastSessionId = analyticsCacheManager.getLastDocId('sessions');
         if (lastSessionId) {
           // Use optimized 7-day window for better performance
           const lastUpdate = Date.now() - 7 * 24 * 60 * 60 * 1000; // Last 7 days (optimized)
           sessionsQuery = query(
             collection(db, ANALYTICS_COLLECTIONS.SESSIONS_V2),
-            where("startTime", ">=", new Date(lastUpdate)),
-            orderBy("startTime", "desc"),
+            where('startTime', '>=', new Date(lastUpdate)),
+            orderBy('startTime', 'desc'),
             limit(200) // Reduced from 300 for better performance
           );
         }
@@ -517,13 +517,13 @@ export default function AnalyticsProvider({
       // Similar incremental fetching for other collections
       const fetchCollection = async (
         collectionName: string,
-        cacheKey: keyof Omit<AnalyticsCache, "version">,
-        timestampField: string = "timestamp"
+        cacheKey: keyof Omit<AnalyticsCache, 'version'>,
+        timestampField: string = 'timestamp'
       ) => {
         const collectionLimit = needsFullRefresh ? 1000 : 500; // Optimized limits for better performance
         let collectionQuery = query(
           collection(db, collectionName),
-          orderBy(timestampField, "desc"),
+          orderBy(timestampField, 'desc'),
           limit(collectionLimit)
         );
 
@@ -532,8 +532,8 @@ export default function AnalyticsProvider({
           const lastUpdate = Date.now() - 7 * 24 * 60 * 60 * 1000; // Last 7 days (optimized)
           collectionQuery = query(
             collection(db, collectionName),
-            where(timestampField, ">=", new Date(lastUpdate)),
-            orderBy(timestampField, "desc"),
+            where(timestampField, '>=', new Date(lastUpdate)),
+            orderBy(timestampField, 'desc'),
             limit(500) // Reduced from 1000 for better performance
           );
         }
@@ -548,62 +548,62 @@ export default function AnalyticsProvider({
 
       // Fetch all collections
       const [messages, buttons, tours, devices, visitors] = await Promise.all([
-        fetchCollection(ANALYTICS_COLLECTIONS.CHAT_MESSAGES_V2, "messages"),
-        fetchCollection(ANALYTICS_COLLECTIONS.BUTTON_CLICKS_V2, "buttonClicks"),
+        fetchCollection(ANALYTICS_COLLECTIONS.CHAT_MESSAGES_V2, 'messages'),
+        fetchCollection(ANALYTICS_COLLECTIONS.BUTTON_CLICKS_V2, 'buttonClicks'),
         fetchCollection(
           ANALYTICS_COLLECTIONS.TOUR_INTERACTIONS_V2,
-          "tourInteractions"
+          'tourInteractions'
         ),
         fetchCollection(
           ANALYTICS_COLLECTIONS.DEVICE_ANALYTICS_V2,
-          "deviceAnalytics"
+          'deviceAnalytics'
         ),
         fetchCollection(
           ANALYTICS_COLLECTIONS.VISITOR_LOCATIONS_V2,
-          "visitorLocations"
+          'visitorLocations'
         ),
       ]);
 
       // Update cache
       analyticsCacheManager.updateCache(
-        "sessions",
+        'sessions',
         sessions,
         !needsFullRefresh
       );
       analyticsCacheManager.updateCache(
-        "messages",
+        'messages',
         messages,
         !needsFullRefresh
       );
       analyticsCacheManager.updateCache(
-        "buttonClicks",
+        'buttonClicks',
         buttons,
         !needsFullRefresh
       );
       analyticsCacheManager.updateCache(
-        "tourInteractions",
+        'tourInteractions',
         tours,
         !needsFullRefresh
       );
       analyticsCacheManager.updateCache(
-        "deviceAnalytics",
+        'deviceAnalytics',
         devices,
         !needsFullRefresh
       );
       analyticsCacheManager.updateCache(
-        "visitorLocations",
+        'visitorLocations',
         visitors,
         !needsFullRefresh
       );
 
       // Get updated cached data
-      const allSessions = analyticsCacheManager.getCachedData("sessions");
-      const allMessages = analyticsCacheManager.getCachedData("messages");
-      const allButtons = analyticsCacheManager.getCachedData("buttonClicks");
-      const allTours = analyticsCacheManager.getCachedData("tourInteractions");
-      const allDevices = analyticsCacheManager.getCachedData("deviceAnalytics");
+      const allSessions = analyticsCacheManager.getCachedData('sessions');
+      const allMessages = analyticsCacheManager.getCachedData('messages');
+      const allButtons = analyticsCacheManager.getCachedData('buttonClicks');
+      const allTours = analyticsCacheManager.getCachedData('tourInteractions');
+      const allDevices = analyticsCacheManager.getCachedData('deviceAnalytics');
       const allVisitors =
-        analyticsCacheManager.getCachedData("visitorLocations");
+        analyticsCacheManager.getCachedData('visitorLocations');
 
       // Process and update state
       const messagesBySession = allMessages.reduce(
@@ -658,7 +658,7 @@ export default function AnalyticsProvider({
         cacheStats: analyticsCacheManager.getCacheStats(),
       });
     } catch (error) {
-      console.error("Error fetching incremental updates:", error);
+      console.error('Error fetching incremental updates:', error);
     } finally {
       setLoading(false);
     }
@@ -667,7 +667,7 @@ export default function AnalyticsProvider({
   // Add cache management functions
   const clearCache = useCallback(() => {
     analyticsCacheManager.clearCache();
-    console.log("🗑️ Analytics cache cleared");
+    console.log('🗑️ Analytics cache cleared');
   }, []);
 
   const getCacheStats = useCallback(() => {
@@ -676,13 +676,13 @@ export default function AnalyticsProvider({
 
   const forceRefresh = useCallback(() => {
     console.log(
-      "🔄 Manual refresh triggered - performing smart incremental update"
+      '🔄 Manual refresh triggered - performing smart incremental update'
     );
     fetchIncrementalDataOnly();
   }, [fetchIncrementalDataOnly]);
 
   const trackButtonClick = useCallback(
-    async (data: Omit<ButtonClick, "id" | "timestamp">) => {
+    async (data: Omit<ButtonClick, 'id' | 'timestamp'>) => {
       if (!db) return;
 
       try {
@@ -691,14 +691,14 @@ export default function AnalyticsProvider({
           timestamp: serverTimestamp(),
         });
       } catch (error) {
-        console.error("Error tracking button click:", error);
+        console.error('Error tracking button click:', error);
       }
     },
     [db]
   );
 
   const trackTourInteraction = useCallback(
-    async (data: Omit<TourInteraction, "id" | "timestamp">) => {
+    async (data: Omit<TourInteraction, 'id' | 'timestamp'>) => {
       if (!db) return;
 
       try {
@@ -710,14 +710,14 @@ export default function AnalyticsProvider({
           }
         );
       } catch (error) {
-        console.error("Error tracking tour interaction:", error);
+        console.error('Error tracking tour interaction:', error);
       }
     },
     [db]
   );
 
   const trackVisitorLocation = useCallback(
-    async (data: Omit<VisitorLocation, "id" | "timestamp">) => {
+    async (data: Omit<VisitorLocation, 'id' | 'timestamp'>) => {
       if (!db) return;
 
       try {
@@ -729,7 +729,7 @@ export default function AnalyticsProvider({
           }
         );
       } catch (error) {
-        console.error("Error tracking visitor location:", error);
+        console.error('Error tracking visitor location:', error);
       }
     },
     [db]
@@ -742,7 +742,7 @@ export default function AnalyticsProvider({
   // Initial data loading useEffect - this was missing!
   useEffect(() => {
     if (db) {
-      console.log("🚀 AnalyticsProvider mounted - fetching initial data");
+      console.log('🚀 AnalyticsProvider mounted - fetching initial data');
       fetchAllData();
     }
   }, [db, fetchAllData]);
@@ -757,35 +757,35 @@ export default function AnalyticsProvider({
   const exportFullAnalytics = useCallback(async () => {
     try {
       setLoading(true);
-      console.log("📊 Starting automated full analytics export...");
+      console.log('📊 Starting automated full analytics export...');
 
       // Retrieve stored password
-      const password = sessionStorage.getItem("analytics_password");
+      const password = sessionStorage.getItem('analytics_password');
       if (!password) {
-        alert("Please authenticate in the dashboard first.");
-        console.log("❌ No stored password");
+        alert('Please authenticate in the dashboard first.');
+        console.log('❌ No stored password');
         return;
       }
 
       // Call API to export directly to hosted file
-      const response = await fetch("/api/analytics-export", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('/api/analytics-export', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           password,
-          exportType: "full",
+          exportType: 'full',
         }),
       });
 
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || "Export failed");
+        throw new Error(result.error || 'Export failed');
       }
 
       // Save export metadata to localStorage
       localStorage.setItem(
-        "analytics_last_export",
+        'analytics_last_export',
         JSON.stringify({
           date: result.exportInfo.date,
           totalRecords: result.exportInfo.totalRecords,
@@ -794,14 +794,14 @@ export default function AnalyticsProvider({
         })
       );
 
-      console.log("✅ Full export completed and stored privately");
+      console.log('✅ Full export completed and stored privately');
       alert(
         `✅ Export completed!\n\n📊 ${result.exportInfo.totalRecords} records exported\n🔒 Data stored securely (private access only)\n🕒 File: ${result.exportInfo.filename}`
       );
     } catch (error) {
-      console.error("❌ Export failed:", error);
+      console.error('❌ Export failed:', error);
       alert(
-        `❌ Export failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `❌ Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     } finally {
       setLoading(false);
@@ -812,19 +812,19 @@ export default function AnalyticsProvider({
     try {
       setLoading(true);
       console.log(
-        "🔄 Starting smart incremental analytics update (no server export)..."
+        '🔄 Starting smart incremental analytics update (no server export)...'
       );
 
       // Only fetch latest data incrementally and update local cache
-      console.log("📊 Step 1: Fetching latest data before export...");
+      console.log('📊 Step 1: Fetching latest data before export...');
       await fetchIncrementalDataOnly();
 
       // Optionally, show a success message
-      alert("✅ Local analytics cache updated incrementally from Firebase!");
+      alert('✅ Local analytics cache updated incrementally from Firebase!');
     } catch (error) {
-      console.error("❌ Incremental update failed:", error);
+      console.error('❌ Incremental update failed:', error);
       alert(
-        `❌ Incremental update failed: ${error instanceof Error ? error.message : "Unknown error"}`
+        `❌ Incremental update failed: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
     } finally {
       setLoading(false);
@@ -836,29 +836,29 @@ export default function AnalyticsProvider({
       try {
         setLoading(true);
 
-        const password = sessionStorage.getItem("analytics_password");
+        const password = sessionStorage.getItem('analytics_password');
         if (!password) {
-          alert("Please authenticate in the dashboard first.");
-          console.log("❌ No stored password");
+          alert('Please authenticate in the dashboard first.');
+          console.log('❌ No stored password');
           return false;
         }
 
         console.log(`📥 Loading analytics from protected API...`);
 
         // Call protected API with password
-        const response = await fetch("/api/analytics-data", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const response = await fetch('/api/analytics-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ password }),
         });
 
         if (!response.ok) {
           if (response.status === 401) {
-            alert("❌ Incorrect password");
+            alert('❌ Incorrect password');
           } else if (response.status === 404) {
-            alert("📝 No analytics data found. Please export data first.");
+            alert('📝 No analytics data found. Please export data first.');
           } else {
-            alert("❌ Failed to load analytics data");
+            alert('❌ Failed to load analytics data');
           }
           return false;
         }
@@ -946,7 +946,7 @@ export default function AnalyticsProvider({
         setLastUpdated(new Date(exportData.metadata.lastUpdate));
 
         // Store password verification in sessionStorage for this session
-        sessionStorage.setItem("analytics_password_verified", "true");
+        sessionStorage.setItem('analytics_password_verified', 'true');
 
         console.log(
           `✅ Loaded analytics from protected API: ${exportData.metadata.totalRecords} records`
@@ -966,11 +966,11 @@ export default function AnalyticsProvider({
           `DEBUG: Sample tourInteractions:`,
           convertedTours.slice(0, 3)
         );
-        alert("✅ Analytics loaded successfully!");
+        alert('✅ Analytics loaded successfully!');
         return true;
       } catch (error) {
-        console.error("❌ Failed to load analytics data:", error);
-        alert("❌ Failed to load analytics data");
+        console.error('❌ Failed to load analytics data:', error);
+        alert('❌ Failed to load analytics data');
         return false;
       } finally {
         setLoading(false);
@@ -980,7 +980,7 @@ export default function AnalyticsProvider({
   );
 
   const getExportStats = useCallback(() => {
-    const lastExportInfo = localStorage.getItem("analytics_last_export");
+    const lastExportInfo = localStorage.getItem('analytics_last_export');
     if (!lastExportInfo) {
       return { hasExport: false };
     }
