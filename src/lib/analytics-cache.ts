@@ -17,8 +17,8 @@ interface AnalyticsCache {
   version: string;
 }
 
-const CACHE_VERSION = "v2.1";
-const CACHE_KEY = "analytics_cache";
+const CACHE_VERSION = 'v2.1';
+const CACHE_KEY = 'analytics_cache';
 const MAX_CACHE_SIZE = 10 * 1024 * 1024; // 10MB limit
 
 class AnalyticsCacheManager {
@@ -30,13 +30,13 @@ class AnalyticsCacheManager {
 
   private loadCache(): void {
     try {
-      if (typeof window === "undefined") return;
+      if (typeof window === 'undefined') return;
       const cacheString = localStorage.getItem(CACHE_KEY);
       if (!cacheString) return;
       this.cache = JSON.parse(cacheString);
-      console.log("📦 Analytics cache loaded from localStorage");
+      console.log('📦 Analytics cache loaded from localStorage');
     } catch (error) {
-      console.warn("Failed to load analytics cache:", error);
+      console.warn('Failed to load analytics cache:', error);
       this.cache = null;
     }
   }
@@ -49,18 +49,18 @@ class AnalyticsCacheManager {
 
       // Check size limit
       if (cacheString.length > MAX_CACHE_SIZE) {
-        console.warn("📦 Cache too large, implementing cleanup...");
+        console.warn('📦 Cache too large, implementing cleanup...');
         this.cleanupCache();
         return;
       }
 
-      if (typeof window !== "undefined") {
+      if (typeof window !== 'undefined') {
         localStorage.setItem(CACHE_KEY, cacheString);
       }
-      console.log("📦 Analytics cache saved to localStorage");
+      console.log('📦 Analytics cache saved to localStorage');
     } catch (error: any) {
-      console.warn("Failed to save analytics cache:", error);
-      if (error.name === "QuotaExceededError") {
+      console.warn('Failed to save analytics cache:', error);
+      if (error.name === 'QuotaExceededError') {
         this.cleanupCache();
       }
     }
@@ -69,14 +69,14 @@ class AnalyticsCacheManager {
   private cleanupCache(): void {
     if (!this.cache) return;
 
-    console.log("🧹 Cleaning up analytics cache...");
+    console.log('🧹 Cleaning up analytics cache...');
 
     // Keep only recent data (last 30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
 
     // Clean each collection
     Object.keys(this.cache).forEach((key) => {
-      if (key === "version") return;
+      if (key === 'version') return;
 
       const collection = this.cache![key as keyof AnalyticsCache] as CacheEntry;
       if (collection && collection.data) {
@@ -104,7 +104,7 @@ class AnalyticsCacheManager {
   }
 
   public getCachedData(
-    collection: keyof Omit<AnalyticsCache, "version">
+    collection: keyof Omit<AnalyticsCache, 'version'>
   ): any[] {
     if (!this.cache) {
       this.initializeCache();
@@ -124,7 +124,7 @@ class AnalyticsCacheManager {
   }
 
   public updateCache(
-    collection: keyof Omit<AnalyticsCache, "version">,
+    collection: keyof Omit<AnalyticsCache, 'version'>,
     newData: any[],
     isIncremental: boolean = false
   ): void {
@@ -163,14 +163,14 @@ class AnalyticsCacheManager {
   }
 
   public getLastDocId(
-    collection: keyof Omit<AnalyticsCache, "version">
+    collection: keyof Omit<AnalyticsCache, 'version'>
   ): string | undefined {
     if (!this.cache) return undefined;
     return this.cache[collection].lastDocId;
   }
 
   public isCacheValid(
-    collection: keyof Omit<AnalyticsCache, "version">
+    collection: keyof Omit<AnalyticsCache, 'version'>
   ): boolean {
     if (!this.cache) return false;
 
@@ -181,27 +181,27 @@ class AnalyticsCacheManager {
   }
 
   public clearCache(): void {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       localStorage.removeItem(CACHE_KEY);
     }
     this.cache = null;
-    console.log("📦 Analytics cache cleared");
+    console.log('📦 Analytics cache cleared');
   }
 
   public getCacheStats(): any {
-    if (!this.cache) return { status: "empty" };
+    if (!this.cache) return { status: 'empty' };
 
     const stats: any = { version: CACHE_VERSION };
 
     Object.keys(this.cache).forEach((key) => {
-      if (key === "version") return;
+      if (key === 'version') return;
 
       const collection = this.cache![key as keyof AnalyticsCache] as CacheEntry;
       stats[key] = {
         count: collection.data?.length || 0,
         lastUpdated: new Date(collection.lastUpdated).toLocaleString(),
         isValid: this.isCacheValid(
-          key as keyof Omit<AnalyticsCache, "version">
+          key as keyof Omit<AnalyticsCache, 'version'>
         ),
       };
     });
@@ -210,7 +210,7 @@ class AnalyticsCacheManager {
   }
 
   public forceCacheRefresh(
-    collection?: keyof Omit<AnalyticsCache, "version">
+    collection?: keyof Omit<AnalyticsCache, 'version'>
   ): void {
     if (!this.cache) return;
 
@@ -221,12 +221,12 @@ class AnalyticsCacheManager {
     } else {
       // Reset all collections
       Object.keys(this.cache).forEach((key) => {
-        if (key !== "version") {
+        if (key !== 'version') {
           (this.cache![key as keyof AnalyticsCache] as CacheEntry).lastUpdated =
             0;
         }
       });
-      console.log("📦 Forced refresh for all collections");
+      console.log('📦 Forced refresh for all collections');
     }
   }
 }
@@ -235,25 +235,3 @@ class AnalyticsCacheManager {
 export const analyticsCacheManager = new AnalyticsCacheManager();
 
 // Helper function for Firebase incremental queries
-export function getIncrementalQuery(
-  baseQuery: any,
-  collection: keyof Omit<AnalyticsCache, "version">,
-  orderByField: string = "timestamp"
-) {
-  const lastDocId = analyticsCacheManager.getLastDocId(collection);
-
-  if (lastDocId) {
-    // Return query that starts after the last cached document
-    return {
-      query: baseQuery,
-      startAfter: lastDocId,
-      isIncremental: true,
-    };
-  }
-
-  return {
-    query: baseQuery,
-    startAfter: null,
-    isIncremental: false,
-  };
-}

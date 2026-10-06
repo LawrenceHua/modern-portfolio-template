@@ -61,3 +61,11 @@ test-results-*.txt
 *.log
 # Local Netlify folder
 .netlify
+
+# Private agent memory (only fictional documentation belongs in public forks)
+memory/*.md
+!memory/README.md
+!memory/EXAMPLE.md
+MEMORY.md
+USER.md
+SOUL.md

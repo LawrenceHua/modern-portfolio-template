@@ -1,5 +1,5 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getFirestore } from 'firebase/firestore';
 
 // Firebase configuration
 export const firebaseConfig = {
@@ -15,9 +15,14 @@ export const firebaseConfig = {
 // Initialize Firebase app
 let app;
 try {
-  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  app =
+    firebaseConfig.apiKey && firebaseConfig.projectId
+      ? !getApps().length
+        ? initializeApp(firebaseConfig)
+        : getApp()
+      : null;
 } catch (error) {
-  console.error("Firebase initialization failed:", error);
+  console.error('Firebase initialization failed:', error);
   app = null;
 }
 
@@ -26,7 +31,5 @@ export const db = app ? getFirestore(app) : null;
 
 // Check if Firebase is properly initialized
 export const isFirebaseInitialized = () => {
-  return db !== null && typeof window !== "undefined";
+  return db !== null && typeof window !== 'undefined';
 };
-
-export { app };

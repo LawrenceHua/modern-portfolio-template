@@ -1,171 +1,19 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import Image from 'next/image';
 
-interface TimelineEvent {
-  type: "education" | "experience";
-  year: string;
-  title: string;
-  org: string;
-  date: string;
-  logo: string;
-  category?: string;
-  bullets?: string[];
-  details?: string[];
-}
-
-const timelineData: TimelineEvent[] = [
-  // Education
-  {
-    type: "education",
-    year: "2024",
-    title: "Master's degree, Business Administration",
-    org: "University Name",
-    date: "Aug 2023 - Dec 2024",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    details: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Relevant Coursework: Product Management, Business Strategy, Data Analytics",
-      "Awards: Dean's List, Academic Excellence",
-    ],
-  },
-  {
-    type: "education",
-    year: "2021",
-    title: "Bachelor's degree, Business Administration",
-    org: "University Name",
-    date: "Aug 2017 - May 2021",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    details: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Relevant Coursework: Marketing, Finance, Operations Management, Business Analytics",
-      "Awards: Dean's List, Academic Excellence",
-    ],
-  },
-  {
-    type: "education",
-    year: "2017",
-    title: "High School Diploma",
-    org: "High School Name",
-    date: "Aug 2013 - May 2017",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    details: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Leadership activities and community service",
-      "Academic excellence and extracurricular involvement",
-    ],
-  },
-  // Experience (Most Recent First)
-  {
-    type: "experience",
-    year: "2025",
-    title: "Senior Product Manager",
-    org: "Company Name · Full-time",
-    date: "Jan 2025 - Present",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "product",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-  {
-    type: "experience",
-    year: "2024",
-    title: "Product Manager",
-    org: "Company Name · Full-time",
-    date: "Mar 2024 - Dec 2024",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "product",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-  {
-    type: "experience",
-    year: "2024",
-    title: "Product Manager Intern",
-    org: "Company Name · Internship",
-    date: "Jun 2024 - Aug 2024",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "product",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-  {
-    type: "experience",
-    year: "2023",
-    title: "Associate Product Manager",
-    org: "Company Name · Full-time",
-    date: "Jan 2023 - Dec 2023",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "product",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-  {
-    type: "experience",
-    year: "2022",
-    title: "Product Analyst",
-    org: "Company Name · Full-time",
-    date: "Jan 2022 - Dec 2022",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "product",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-  {
-    type: "experience",
-    year: "2021",
-    title: "Business Analyst",
-    org: "Company Name · Full-time",
-    date: "Jan 2021 - Dec 2021",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "product",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-  {
-    type: "experience",
-    year: "2020",
-    title: "Marketing Intern",
-    org: "Company Name · Internship",
-    date: "Jun 2020 - Aug 2020",
-    logo: "/images/logos/pm_happy_hour_logo.jpeg",
-    category: "marketing",
-    bullets: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    ],
-  },
-];
+const timelineData = siteConfig.timelineData;
 
 const categories = [
-  { key: "all", label: "All" },
-  { key: "product", label: "Product Management" },
-  { key: "engineering", label: "Engineering" },
-  { key: "retail", label: "Retail" },
+  { key: 'all', label: 'All' },
+  { key: 'product', label: 'Product Management' },
+  { key: 'engineering', label: 'Engineering' },
+  { key: 'retail', label: 'Retail' },
 ];
 
 interface TimelineSectionProps {
@@ -173,21 +21,15 @@ interface TimelineSectionProps {
   currentStep?: number;
 }
 
-const generateId = (item: TimelineEvent) => {
-  const orgSlug = item.org
-    .toLowerCase()
-    .replace(/ /g, "-")
-    .split("·")[0]
-    .replace(/-+$/, "");
-  return `timeline-${orgSlug}`;
-};
+const generateId = (item: (typeof timelineData)[number]) =>
+  `timeline-${item.type}-${timelineData.indexOf(item)}`;
 
 export function TimelineSection({
   tourActive = false,
   currentStep = -1,
 }: TimelineSectionProps = {}) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile device
@@ -197,11 +39,11 @@ export function TimelineSection({
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState('all');
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -210,65 +52,17 @@ export function TimelineSection({
     // Special filtering for tour step 4 - show specific experiences in priority order
     if (tourActive && currentStep === 3) {
       const allExperiences = timelineData.filter(
-        (item) => item.type === "experience"
+        (item) => item.type === 'experience'
       );
 
-      // Define the priority 4 experiences in the requested order
-      const priorityExperiences: TimelineEvent[] = [];
-
-      // 1. PM Happy Hour · Internship (Product Manager) - Mar 2025 - Present
-      const pmHappyHour = allExperiences.find(
-        (item) =>
-          item.title === "Product Manager" && item.org.includes("PM Happy Hour")
-      );
-      if (pmHappyHour) priorityExperiences.push(pmHappyHour);
-
-      // 2. Tutora · Part-time (AI Product Consultant & CS Instructor) - Mar 2021 - Present
-      const tutora = allExperiences.find(
-        (item) =>
-          item.title === "AI Product Consultant & CS Instructor" &&
-          item.org.includes("Tutora")
-      );
-      if (tutora) priorityExperiences.push(tutora);
-
-      // 3. Kearney (Student Consultant, Technical Lead) - Sep 2024 - Dec 2024
-      const kearney = allExperiences.find(
-        (item) =>
-          item.title === "Student Consultant, Technical Lead" &&
-          item.org.includes("Kearney")
-      );
-      if (kearney) priorityExperiences.push(kearney);
-
-      // 4. Motorola Solutions · Full-time (Embedded Android Engineer) - Aug 2021 - Aug 2023
-      const motorola = allExperiences.find(
-        (item) =>
-          item.title === "Embedded Android Engineer" &&
-          item.org.includes("Motorola Solutions")
-      );
-      if (motorola) priorityExperiences.push(motorola);
-
-      // Get the rest of the experiences (excluding the priority 4)
-      const priorityTitlesAndOrgs = priorityExperiences.map((exp) => ({
-        title: exp.title,
-        org: exp.org,
-      }));
-
-      const remainingExperiences = allExperiences.filter((item) => {
-        return !priorityTitlesAndOrgs.some(
-          (priority) =>
-            priority.title === item.title && priority.org === item.org
-        );
-      });
-
-      // Return priority experiences first, then the rest
-      return [...priorityExperiences, ...remainingExperiences];
+      return allExperiences;
     }
 
     return timelineData.filter(
       (item) =>
-        activeCategory === "all" ||
+        activeCategory === 'all' ||
         item.category === activeCategory ||
-        item.type === "education"
+        item.type === 'education'
     );
   }, [activeCategory, tourActive, currentStep]);
 
@@ -311,7 +105,7 @@ export function TimelineSection({
     e.stopPropagation();
     container.scrollTo({
       top: scrollTop + e.deltaY,
-      behavior: "auto",
+      behavior: 'auto',
     });
   };
 
@@ -343,21 +137,21 @@ export function TimelineSection({
           y: 0,
           transition: {
             duration: isMobile ? 0 : 0.6,
-            ease: "easeOut",
+            ease: 'easeOut',
           },
         },
       };
 
   const getCategoryColor = (category?: string) => {
     switch (category) {
-      case "product":
-        return "from-gray-400 to-gray-600";
-      case "engineering":
-        return "from-gray-400 to-gray-600";
-      case "retail":
-        return "from-gray-400 to-gray-600";
+      case 'product':
+        return 'from-gray-400 to-gray-600';
+      case 'engineering':
+        return 'from-gray-400 to-gray-600';
+      case 'retail':
+        return 'from-gray-400 to-gray-600';
       default:
-        return "from-gray-400 to-gray-600";
+        return 'from-gray-400 to-gray-600';
     }
   };
 
@@ -376,7 +170,7 @@ export function TimelineSection({
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={isInView ? 'visible' : 'hidden'}
         className="relative z-10 mx-auto max-w-7xl px-6"
       >
         {/* Section Header */}
@@ -404,8 +198,8 @@ export function TimelineSection({
                 whileTap={{ scale: 0.95 }}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border backdrop-blur-sm ${
                   activeCategory === category.key
-                    ? "bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20"
-                    : "bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    ? 'bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20'
+                    : 'bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                 }`}
               >
                 {category.label}
@@ -426,7 +220,7 @@ export function TimelineSection({
             </h3>
             <div className="space-y-6">
               {timelineData
-                .filter((item) => item.type === "education")
+                .filter((item) => item.type === 'education')
                 .map((item) => {
                   const cardId = `${item.type}-${item.year}-${item.title}`;
                   const isExpanded = expandedCards.has(cardId);
@@ -468,7 +262,7 @@ export function TimelineSection({
                             </div>
                           </div>
                           <div
-                            className={`transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                            className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                           >
                             <svg
                               className="w-4 h-4 text-gray-400"
@@ -488,7 +282,7 @@ export function TimelineSection({
 
                         {/* Expandable Content */}
                         <div
-                          className={`overflow-hidden ${isExpanded ? "block" : "hidden"}`}
+                          className={`overflow-hidden ${isExpanded ? 'block' : 'hidden'}`}
                         >
                           <div className="mt-4 space-y-2">
                             {item.details?.map((detail, idx) => (
@@ -528,7 +322,7 @@ export function TimelineSection({
                 className="relative space-y-6 overflow-y-auto max-h-[600px] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent pr-4 -mr-4"
               >
                 {filteredTimeline
-                  .filter((item) => item.type === "experience")
+                  .filter((item) => item.type === 'experience')
                   .map((item) => {
                     const cardId = `${item.type}-${item.year}-${item.title}`;
                     const isExpanded = expandedCards.has(cardId);
@@ -576,7 +370,7 @@ export function TimelineSection({
                               </p>
                             </div>
                             <div
-                              className={`transform transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                              className={`transform transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
                             >
                               <svg
                                 className="w-5 h-5 text-gray-400"
@@ -596,7 +390,7 @@ export function TimelineSection({
 
                           {/* Expandable Content */}
                           <div
-                            className={`overflow-hidden ${isExpanded ? "block" : "hidden"}`}
+                            className={`overflow-hidden ${isExpanded ? 'block' : 'hidden'}`}
                           >
                             <div className="mt-4 space-y-2">
                               {item.bullets?.map((bullet, idx) => (

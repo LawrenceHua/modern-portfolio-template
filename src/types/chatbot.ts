@@ -5,7 +5,7 @@ export interface FilePreview {
 }
 
 export interface Message {
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: string;
   files?: FilePreview[];
   timestamp: Date;
@@ -14,12 +14,6 @@ export interface Message {
 export interface ChatbotProps {
   isOpen: boolean;
   onClose: () => void;
-}
-
-export interface FloatingChatbotProps {
-  isOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  tourActive?: boolean;
 }
 
 export interface CalendarTimePickerProps {
@@ -36,18 +30,3 @@ export interface ChatbotAnalyticsEvent {
   page?: string;
   [key: string]: any;
 }
-
-export interface ContactInfo {
-  name?: string;
-  email?: string;
-  company?: string;
-  position?: string;
-  message?: string;
-  isContactRequest: boolean;
-}
-
-export interface SessionInfo {
-  id: string;
-  lastActivity: number;
-  isExpired: boolean;
-} 

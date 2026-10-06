@@ -1,22 +1,23 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import { useState, useEffect, useRef } from "react";
-import { flushSync } from "react-dom";
-import type { Message, FilePreview } from "../types/chatbot";
-import { trackChatbotEvent } from "../lib/analytics";
+import { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
+import type { Message, FilePreview } from '../types/chatbot';
+import { trackChatbotEvent } from '../lib/analytics';
 import {
   getSessionId,
   updateSessionActivity,
   clearSession,
-} from "../lib/session";
+} from '../lib/session';
 
 const WELCOME_MESSAGE: Message = {
-  role: "assistant" as const,
-  content: `👋 Hey there! I'm YOUR_NAME's AI assistant!
+  role: 'assistant' as const,
+  content: `👋 Hey there! I'm ${siteConfig.name}'s AI assistant!
 
-I can help you discover what makes YOUR_NAME tick as a YOUR_TITLE.
+I can help you discover what makes ${siteConfig.name} tick as a ${siteConfig.title}.
 
-Try asking me something like "What's YOUR_NAME's biggest accomplishment?" or "How does YOUR_NAME approach problem-solving?"`,
+Try asking me something like "What's ${siteConfig.name}'s biggest accomplishment?" or "How does ${siteConfig.name} approach problem-solving?"`,
   timestamp: new Date(),
 };
 
@@ -25,7 +26,7 @@ export function useChatbot(isOpen: boolean) {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isCalendarMode, setIsCalendarMode] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -38,7 +39,7 @@ export function useChatbot(isOpen: boolean) {
     useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [fileError, setFileError] = useState("");
+  const [fileError, setFileError] = useState('');
   const [hasUserSentMessage, setHasUserSentMessage] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -48,7 +49,7 @@ export function useChatbot(isOpen: boolean) {
   // Track conversation start when chatbot opens
   useEffect(() => {
     if (isOpen) {
-      trackChatbotEvent("conversation_started", {
+      trackChatbotEvent('conversation_started', {
         timestamp: new Date().toISOString(),
         initialMessageLength: messages[0]?.content.length || 0,
       });
@@ -62,9 +63,9 @@ export function useChatbot(isOpen: boolean) {
     };
 
     checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+    window.addEventListener('resize', checkIfMobile);
 
-    return () => window.removeEventListener("resize", checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   const isDesktop = !isMobile;
@@ -73,8 +74,8 @@ export function useChatbot(isOpen: boolean) {
   const scrollToBottom = (delay: number = 100) => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end",
+        behavior: 'smooth',
+        block: 'end',
       });
     }, delay);
   };
@@ -85,22 +86,22 @@ export function useChatbot(isOpen: boolean) {
 
     // INSTANT RESPONSES: Quick button clicks should NEVER show loading
     const instantButtonResponses = [
-      "skills",
-      "skill",
-      "experience",
-      "experiences",
-      "projects",
-      "portfolio",
-      "education",
-      "degree",
-      "contact",
-      "connect",
-      "ai",
-      "artificial intelligence",
-      "machine learning",
-      "ml",
-      "technologies",
-      "tech stack",
+      'skills',
+      'skill',
+      'experience',
+      'experiences',
+      'projects',
+      'portfolio',
+      'education',
+      'degree',
+      'contact',
+      'connect',
+      'ai',
+      'artificial intelligence',
+      'machine learning',
+      'ml',
+      'technologies',
+      'tech stack',
     ];
 
     // If it's a simple button click (single word or very short phrase), make it instant
@@ -112,39 +113,39 @@ export function useChatbot(isOpen: boolean) {
     }
 
     const longRunningTriggers = [
-      "tell me about lawrence's experience",
-      "lawrence's background",
-      "what has lawrence done",
-      "lawrence's work history",
-      "lawrence's resume",
-      "lawrence's cv",
-      "all of lawrence's skills",
-      "lawrence's technical abilities",
-      "lawrence's expertise",
-      "lawrence's accomplishments",
-      "lawrence's achievements",
-      "lawrence's portfolio",
-      "lawrence's projects",
-      "comprehensive",
-      "detailed",
-      "everything about",
-      "full background",
-      "complete experience",
-      "entire portfolio",
+      `tell me about ${siteConfig.name.toLowerCase()}'s experience`,
+      `${siteConfig.name.toLowerCase()}'s background`,
+      `what has ${siteConfig.name.toLowerCase()} done`,
+      `${siteConfig.name.toLowerCase()}'s work history`,
+      `${siteConfig.name.toLowerCase()}'s resume`,
+      `${siteConfig.name.toLowerCase()}'s cv`,
+      `all of ${siteConfig.name.toLowerCase()}'s skills`,
+      `${siteConfig.name.toLowerCase()}'s technical abilities`,
+      `${siteConfig.name.toLowerCase()}'s expertise`,
+      `${siteConfig.name.toLowerCase()}'s accomplishments`,
+      `${siteConfig.name.toLowerCase()}'s achievements`,
+      `${siteConfig.name.toLowerCase()}'s portfolio`,
+      `${siteConfig.name.toLowerCase()}'s projects`,
+      'comprehensive',
+      'detailed',
+      'everything about',
+      'full background',
+      'complete experience',
+      'entire portfolio',
     ];
 
     // More restrictive - require longer phrases or specific comprehensive requests
     return (
       longRunningTriggers.some((trigger) => lowerMessage.includes(trigger)) ||
-      (lowerMessage.includes("lawrence") &&
-        (lowerMessage.includes("experience") ||
-          lowerMessage.includes("background")) &&
+      (lowerMessage.includes(`${siteConfig.name.toLowerCase()}`) &&
+        (lowerMessage.includes('experience') ||
+          lowerMessage.includes('background')) &&
         lowerMessage.length > 25)
     ); // Only for longer, detailed queries
   };
 
   // Get a varied loading message (restored from original)
-  const getLoadingMessage = (): string => "Thinking...";
+  const getLoadingMessage = (): string => 'Thinking...';
 
   // API call function that can be reused (restored from original)
   const sendMessageToAPI = async (
@@ -157,7 +158,7 @@ export function useChatbot(isOpen: boolean) {
     // Add predictive loading message for longer queries
     if (isLongRunning) {
       const loadingMessage: Message = {
-        role: "assistant",
+        role: 'assistant',
         content: getLoadingMessage(),
         timestamp: new Date(),
       };
@@ -174,29 +175,29 @@ export function useChatbot(isOpen: boolean) {
 
     try {
       const formData = new FormData();
-      formData.append("message", messageText);
-      formData.append("history", JSON.stringify(currentMessages.slice(-10))); // Only send last 10 messages for faster processing
-      formData.append("sessionId", getSessionId());
+      formData.append('message', messageText);
+      formData.append('history', JSON.stringify(currentMessages.slice(-10))); // Only send last 10 messages for faster processing
+      formData.append('sessionId', getSessionId());
 
-      const response = await fetch("/api/chatbot", {
-        method: "POST",
+      const response = await fetch('/api/chatbot', {
+        method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get response");
+        throw new Error('Failed to get response');
       }
 
       const data = await response.json();
 
-      // Check if this is the Myley easter egg response using the flag from backend
-      const isMyleyResponse = data.isMyleyResponse;
+      // Check if this is the friend easter egg response using the flag from backend
+      const isspecialTopicResponse = data.isspecialTopicResponse;
 
       // Check if password is needed
       const needsPassword = data.needsPassword;
       setAwaitingGirlfriendPassword(!!needsPassword);
 
-      if (isMyleyResponse && !needsPassword) {
+      if (isspecialTopicResponse && !needsPassword) {
         setIsLoveMode(true);
       }
 
@@ -206,20 +207,22 @@ export function useChatbot(isOpen: boolean) {
         const lastMessage = prev[prev.length - 1];
         const isLoadingMessage =
           lastMessage &&
-          (lastMessage.content.includes("⏳ Bear with me while I gather") ||
-            lastMessage.content.includes("🔍 Pulling up YOUR_NAME's") ||
-            lastMessage.content.includes("📊 Analyzing YOUR_NAME's") ||
-            lastMessage.content.includes("💼 Compiling his") ||
-            lastMessage.content.includes("🚀 Loading") ||
-            lastMessage.content.includes("⚡ Gathering insights") ||
-            lastMessage.content.includes("🛠️ Compiling YOUR_NAME's"));
+          (lastMessage.content.includes('⏳ Bear with me while I gather') ||
+            lastMessage.content.includes(
+              `🔍 Pulling up ${siteConfig.name}'s`
+            ) ||
+            lastMessage.content.includes(`📊 Analyzing ${siteConfig.name}'s`) ||
+            lastMessage.content.includes('💼 Compiling his') ||
+            lastMessage.content.includes('🚀 Loading') ||
+            lastMessage.content.includes('⚡ Gathering insights') ||
+            lastMessage.content.includes(`🛠️ Compiling ${siteConfig.name}'s`));
 
         if (isLoadingMessage && isLongRunning) {
           // Replace the loading message with the actual response
           return [
             ...prev.slice(0, -1),
             {
-              role: "assistant",
+              role: 'assistant',
               content: data.response,
               timestamp: new Date(),
             },
@@ -229,7 +232,7 @@ export function useChatbot(isOpen: boolean) {
           return [
             ...prev,
             {
-              role: "assistant",
+              role: 'assistant',
               content: data.response,
               timestamp: new Date(),
             },
@@ -237,25 +240,26 @@ export function useChatbot(isOpen: boolean) {
         }
       });
     } catch (error) {
-      console.error("Chatbot error:", error);
+      console.error('Chatbot error:', error);
 
       // Replace loading message with error response, or append if no loading message
       setMessages((prev) => {
         const lastMessage = prev[prev.length - 1];
         const isLoadingMessage =
           lastMessage &&
-          (lastMessage.content.includes("⏳ Bear with me while I gather") ||
-            lastMessage.content.includes("🔍 Pulling up YOUR_NAME's") ||
-            lastMessage.content.includes("📊 Analyzing YOUR_NAME's") ||
-            lastMessage.content.includes("💼 Compiling his") ||
-            lastMessage.content.includes("🚀 Loading") ||
-            lastMessage.content.includes("⚡ Gathering insights") ||
-            lastMessage.content.includes("🛠️ Compiling YOUR_NAME's"));
+          (lastMessage.content.includes('⏳ Bear with me while I gather') ||
+            lastMessage.content.includes(
+              `🔍 Pulling up ${siteConfig.name}'s`
+            ) ||
+            lastMessage.content.includes(`📊 Analyzing ${siteConfig.name}'s`) ||
+            lastMessage.content.includes('💼 Compiling his') ||
+            lastMessage.content.includes('🚀 Loading') ||
+            lastMessage.content.includes('⚡ Gathering insights') ||
+            lastMessage.content.includes(`🛠️ Compiling ${siteConfig.name}'s`));
 
         const errorMessage = {
-          role: "assistant" as const,
-          content:
-            "I'm sorry, I'm having trouble connecting right now. Please try again later or reach out to YOUR_NAME directly.",
+          role: 'assistant' as const,
+          content: `I'm sorry, I'm having trouble connecting right now. Please try again later or reach out to ${siteConfig.name} directly.`,
           timestamp: new Date(),
         };
 
@@ -295,7 +299,7 @@ export function useChatbot(isOpen: boolean) {
               inputRef.current.focus();
             }
           } catch (error) {
-            console.log("Initial focus failed:", error);
+            console.log('Initial focus failed:', error);
           }
         }
       }, 100);
@@ -323,7 +327,7 @@ export function useChatbot(isOpen: boolean) {
             }
           } catch (error) {
             // Fallback if focus fails
-            console.log("Auto-focus failed:", error);
+            console.log('Auto-focus failed:', error);
           }
         }
       }, 300);
@@ -372,22 +376,22 @@ export function useChatbot(isOpen: boolean) {
 
     // Track message send event
     const eventData = {
-      eventType: "message_sent",
+      eventType: 'message_sent',
       sessionId: sessionId,
       messageLength: messageText.length,
       hasFiles: files ? files.length > 0 : false,
       fileTypes:
         files && files.length > 0
-          ? Array.from(new Set(files.map((f) => f.type || "unknown")))
+          ? Array.from(new Set(files.map((f) => f.type || 'unknown')))
           : [],
       timestamp: new Date().toISOString(),
     };
 
-    trackChatbotEvent("message_sent", eventData);
+    trackChatbotEvent('message_sent', eventData);
 
     // Add user message IMMEDIATELY with flushSync for instant appearance
     const userMessage: Message = {
-      role: "user",
+      role: 'user',
       content: messageText,
       files: files?.map((file) => ({
         url: URL.createObjectURL(file),
@@ -399,7 +403,7 @@ export function useChatbot(isOpen: boolean) {
 
     // Use flushSync to force immediate DOM update - user message appears instantly
     flushSync(() => {
-      setInputValue("");
+      setInputValue('');
       setSelectedFiles([]);
       setMessages((prev) => [...prev, userMessage]);
       setHasUserSentMessage(true);
@@ -408,52 +412,51 @@ export function useChatbot(isOpen: boolean) {
     // Handle file uploads with custom API call
     if (files && files.length > 0) {
       const formData = new FormData();
-      formData.append("message", messageText);
-      formData.append("history", JSON.stringify(currentMessages.slice(-10))); // Only send last 10 messages for faster processing
-      formData.append("sessionId", sessionId);
+      formData.append('message', messageText);
+      formData.append('history', JSON.stringify(currentMessages.slice(-10))); // Only send last 10 messages for faster processing
+      formData.append('sessionId', sessionId);
       files.forEach((file) => {
-        formData.append("files", file);
+        formData.append('files', file);
       });
 
       setIsLoading(true);
 
       try {
-        const response = await fetch("/api/chatbot", {
-          method: "POST",
+        const response = await fetch('/api/chatbot', {
+          method: 'POST',
           body: formData,
         });
 
         if (!response.ok) {
-          throw new Error("Failed to get response");
+          throw new Error('Failed to get response');
         }
 
         const data = await response.json();
 
-        // Check if this is the Myley easter egg response using the flag from backend
-        const isMyleyResponse = data.isMyleyResponse;
+        // Check if this is the friend easter egg response using the flag from backend
+        const isspecialTopicResponse = data.isspecialTopicResponse;
         const needsPassword = data.needsPassword;
         setAwaitingGirlfriendPassword(!!needsPassword);
 
-        if (isMyleyResponse && !needsPassword) {
+        if (isspecialTopicResponse && !needsPassword) {
           setIsLoveMode(true);
         }
 
         setMessages((prev) => [
           ...prev,
           {
-            role: "assistant",
+            role: 'assistant',
             content: data.response,
             timestamp: new Date(),
           },
         ]);
       } catch (error) {
-        console.error("Chatbot error:", error);
+        console.error('Chatbot error:', error);
         setMessages((prev) => [
           ...prev,
           {
-            role: "assistant",
-            content:
-              "I'm sorry, I'm having trouble connecting right now. Please try again later or reach out to YOUR_NAME directly.",
+            role: 'assistant',
+            content: `I'm sorry, I'm having trouble connecting right now. Please try again later or reach out to ${siteConfig.name} directly.`,
             timestamp: new Date(),
           },
         ]);
@@ -473,12 +476,12 @@ export function useChatbot(isOpen: boolean) {
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFileError("");
+    setFileError('');
     const files = Array.from(e.target.files || []);
 
     // Track file selection
     if (files.length > 0) {
-      trackChatbotEvent("files_selected", {
+      trackChatbotEvent('files_selected', {
         fileCount: files.length,
         fileSizes: files.map((f) => f.size),
         fileTypes: files.map((f) => f.type),
@@ -489,12 +492,12 @@ export function useChatbot(isOpen: boolean) {
     // Limit file size to 10MB
     const tooLarge = files.some((file) => file.size > 10 * 1024 * 1024);
     if (tooLarge) {
-      trackChatbotEvent("file_error", {
-        errorType: "size_limit",
+      trackChatbotEvent('file_error', {
+        errorType: 'size_limit',
         fileCount: files.length,
       });
       setFileError(
-        "File size exceeds the 10MB limit. Please select a smaller file."
+        'File size exceeds the 10MB limit. Please select a smaller file.'
       );
       scrollToBottom();
       return;
@@ -514,9 +517,9 @@ export function useChatbot(isOpen: boolean) {
     const lastMessage = messages[messages.length - 1];
     return (
       lastMessage &&
-      lastMessage.role === "assistant" &&
+      lastMessage.role === 'assistant' &&
       lastMessage.content.includes(
-        "When would you like to schedule the meeting"
+        'When would you like to schedule the meeting'
       )
     );
   };

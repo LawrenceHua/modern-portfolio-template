@@ -1,11 +1,12 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { FiFileText, FiMessageCircle, FiArrowDown } from "react-icons/fi";
-import { FaLinkedin } from "react-icons/fa";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { FiFileText, FiMessageCircle, FiArrowDown } from 'react-icons/fi';
+import { FaLinkedin } from 'react-icons/fa';
 
 // 🎯 CUSTOMIZATION: Update your personal information here
 // Change the profile image, name, title, and description
@@ -35,43 +36,16 @@ export function HeroSection({
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Default text gallery with mobile-friendly versions
-  const textGallery = [
-    {
-      text: "Product Strategy",
-      mobileText: "Product Strategy",
-      gradient: "from-white via-gray-300 to-gray-500",
-    },
-    {
-      text: "User Experience",
-      mobileText: "User Experience",
-      gradient: "from-white via-gray-300 to-gray-500",
-    },
-    {
-      text: "Business Growth",
-      mobileText: "Business Growth",
-      gradient: "from-white via-gray-300 to-gray-500",
-    },
-    {
-      text: "Market Analysis",
-      mobileText: "Market Analysis",
-      gradient: "from-white via-gray-300 to-gray-500",
-    },
-    {
-      text: "Team Leadership",
-      mobileText: "Team Leadership",
-      gradient: "from-white via-gray-300 to-gray-500",
-    },
-    {
-      text: "Data Insights",
-      mobileText: "Data Insights",
-      gradient: "from-white via-gray-300 to-gray-500",
-    },
-  ];
+  const textGallery = siteConfig.hero.specialties.map((text) => ({
+    text,
+    mobileText: text,
+    gradient: 'from-white via-gray-300 to-gray-500',
+  }));
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -104,7 +78,7 @@ export function HeroSection({
       y: 0,
       transition: {
         duration: isMobile ? 0 : 0.6,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
@@ -118,7 +92,7 @@ export function HeroSection({
             transition: {
               duration: 2,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             },
           },
   };
@@ -128,26 +102,26 @@ export function HeroSection({
       opacity: isMobile ? 1 : 0,
       y: isMobile ? 0 : 20,
       scale: 1,
-      filter: "blur(0px)",
+      filter: 'blur(0px)',
     },
     animate: {
       opacity: 1,
       y: 0,
       scale: 1,
-      filter: "blur(0px)",
+      filter: 'blur(0px)',
       transition: {
         duration: isMobile ? 0 : 0.6,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
     exit: {
       opacity: isMobile ? 1 : 0,
       y: isMobile ? 0 : -20,
       scale: 1,
-      filter: "blur(0px)",
+      filter: 'blur(0px)',
       transition: {
         duration: isMobile ? 0 : 0.4,
-        ease: "easeIn",
+        ease: 'easeIn',
       },
     },
   };
@@ -201,13 +175,13 @@ export function HeroSection({
                 exit={{ opacity: 0, scale: 0, x: -20 }}
                 transition={{
                   duration: 0.8,
-                  ease: "easeOut",
+                  ease: 'easeOut',
                 }}
                 className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 sm:-translate-x-20 md:-translate-x-24 lg:-translate-x-28 z-10"
               >
                 <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28">
                   <Image
-                    src="/tuxedo-cat.svg"
+                    src="/images/icons/tuxedo-cat.svg"
                     alt="Tuxedo Cat"
                     width={112}
                     height={112}
@@ -228,8 +202,8 @@ export function HeroSection({
             whileTap={{ scale: 0.95 }}
           >
             <Image
-              src="/images/logos/pm_happy_hour_logo.jpeg"
-              alt="YOUR_NAME"
+              src={siteConfig.images.profile}
+              alt={siteConfig.name}
               fill
               className="object-cover transition-all duration-300 group-hover:brightness-110"
               priority
@@ -253,14 +227,14 @@ export function HeroSection({
                 exit={{ opacity: 0, scale: 0, x: 20 }}
                 transition={{
                   duration: 0.8,
-                  ease: "easeOut",
+                  ease: 'easeOut',
                   delay: 0.2,
                 }}
                 className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 sm:translate-x-20 md:translate-x-24 lg:translate-x-28 z-10"
               >
                 <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28">
                   <Image
-                    src="/grey-cat.svg"
+                    src="/images/icons/grey-cat.svg"
                     alt="Grey Cat"
                     width={112}
                     height={112}
@@ -278,13 +252,13 @@ export function HeroSection({
             className="mb-2 sm:mb-4 text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight cursor-pointer hover:scale-105 transition-transform duration-300"
             onClick={() => onCatsToggle?.(!showCats)}
           >
-            YOUR_FIRST_NAME{" "}
+            {siteConfig.name.split(' ')[0]}{' '}
             <span className="bg-gradient-to-r from-gray-400 to-gray-500 bg-clip-text text-transparent">
-              YOUR_LAST_NAME
+              {siteConfig.name.split(' ').slice(1).join(' ')}
             </span>
           </h1>
           <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-gray-200">
-            Product Manager
+            {siteConfig.title}
           </div>
         </motion.div>
 
@@ -300,7 +274,7 @@ export function HeroSection({
               transition={{ delay: 0.5, duration: 0.6 }}
               className="text-center px-2"
             >
-              Building human-centered products that transform ideas into
+              {siteConfig.hero.description}
             </motion.div>
 
             {/* Dynamic Animated Text Gallery */}
@@ -317,8 +291,8 @@ export function HeroSection({
                   <span
                     className={`font-bold text-xl sm:text-2xl md:text-3xl lg:text-4xl bg-gradient-to-r ${textGallery[currentIndex].gradient} bg-clip-text text-transparent text-center leading-tight`}
                     style={{
-                      wordBreak: "break-word",
-                      hyphens: "auto",
+                      wordBreak: 'break-word',
+                      hyphens: 'auto',
                     }}
                   >
                     {isMobile
@@ -345,18 +319,20 @@ export function HeroSection({
         >
           <button
             onClick={() => {
-              const timelineSection = document.getElementById("timeline");
-              timelineSection?.scrollIntoView({ behavior: "smooth" });
+              const timelineSection = document.getElementById('timeline');
+              timelineSection?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="flex items-center space-x-1 sm:space-x-2 rounded-full bg-white/5 px-2 sm:px-4 py-1 sm:py-2 backdrop-blur-sm hover:bg-white/10 transition-all duration-200 hover:scale-105"
           >
             <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-white" />
-            <span className="whitespace-nowrap">Business Degree</span>
+            <span className="whitespace-nowrap">
+              {siteConfig.hero.highlights[0]}
+            </span>
           </button>
           <button
             onClick={() => {
-              const timelineSection = document.getElementById("timeline");
-              timelineSection?.scrollIntoView({ behavior: "smooth" });
+              const timelineSection = document.getElementById('timeline');
+              timelineSection?.scrollIntoView({ behavior: 'smooth' });
             }}
             className="flex items-center space-x-1 sm:space-x-2 rounded-full bg-white/5 px-2 sm:px-4 py-1 sm:py-2 backdrop-blur-sm hover:bg-white/10 transition-all duration-200 hover:scale-105"
           >
@@ -366,7 +342,7 @@ export function HeroSection({
             </span>
           </button>
           <Link
-            href="https://www.expiredsolutions.com"
+            href={siteConfig.links.resume}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-1 sm:space-x-2 rounded-full bg-white/5 px-2 sm:px-4 py-1 sm:py-2 backdrop-blur-sm hover:bg-white/10 transition-all duration-200 hover:scale-105"
@@ -382,12 +358,12 @@ export function HeroSection({
           className="mb-8 sm:mb-14 flex flex-col gap-3 sm:gap-4 md:flex-row md:justify-center px-4"
         >
           <Link
-            href="/resume.pdf"
+            href={siteConfig.links.resume}
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center justify-center rounded-lg bg-gradient-to-r from-white to-gray-300 px-6 sm:px-8 py-3 sm:py-4 text-black font-semibold transition-all duration-300 hover:from-gray-200 hover:to-gray-400 hover:scale-105 hover:shadow-lg hover:shadow-white/25"
             onClick={() =>
-              trackButtonClick?.("download_resume", "Download Resume")
+              trackButtonClick?.('download_resume', 'Download Resume')
             }
           >
             <FiFileText className="mr-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:scale-110" />
@@ -396,7 +372,7 @@ export function HeroSection({
 
           <motion.button
             onClick={() => {
-              trackButtonClick?.("start_tour", "Take Product Tour");
+              trackButtonClick?.('start_tour', 'Take Product Tour');
               onStartTour?.();
             }}
             whileHover={{ scale: 1.05 }}
@@ -408,10 +384,10 @@ export function HeroSection({
           </motion.button>
 
           <Link
-            href="YOUR_LINKEDIN_URL"
+            href={siteConfig.links.linkedin}
             target="_blank"
             className="group flex items-center justify-center rounded-lg bg-gradient-to-r from-[#0077B5] to-[#006399] px-6 sm:px-8 py-3 sm:py-4 text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
-            onClick={() => trackButtonClick?.("linkedin_profile", "LinkedIn")}
+            onClick={() => trackButtonClick?.('linkedin_profile', 'LinkedIn')}
           >
             <FaLinkedin className="mr-2 h-4 w-4 sm:h-5 sm:w-5 transition-transform group-hover:scale-110" />
             LinkedIn
@@ -422,8 +398,8 @@ export function HeroSection({
         <motion.div variants={itemVariants} className="mb-8 relative px-4">
           <motion.button
             onClick={() => {
-              trackButtonClick?.("lets_connect", "Let's Connect!");
-              const contactSection = document.getElementById("contact");
+              trackButtonClick?.('lets_connect', "Let's Connect!");
+              const contactSection = document.getElementById('contact');
               if (contactSection) {
                 const elementPosition =
                   contactSection.getBoundingClientRect().top;
@@ -431,7 +407,7 @@ export function HeroSection({
                   elementPosition + window.pageYOffset - 120;
                 window.scrollTo({
                   top: offsetPosition,
-                  behavior: "smooth",
+                  behavior: 'smooth',
                 });
               }
             }}
@@ -439,7 +415,7 @@ export function HeroSection({
             whileTap={{ scale: 0.98 }}
             className="w-full max-w-lg rounded-xl bg-gradient-to-r from-gray-600 via-gray-700 to-gray-600 px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg lg:text-xl font-bold text-white shadow-xl transition-all duration-300 hover:shadow-2xl hover:shadow-gray-500/25"
           >
-            🚀 Looking for a Product Manager?
+            Looking for {siteConfig.title}?
             <br />
             Let's Connect!
           </motion.button>
@@ -450,7 +426,7 @@ export function HeroSection({
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 2, duration: 0.8, ease: "easeOut" }}
+            transition={{ delay: 2, duration: 0.8, ease: 'easeOut' }}
             className="absolute -left-16 top-1/2 -translate-y-1/2 -translate-x-8 flex flex-col items-center space-y-4 z-20 md:-left-12 md:-translate-x-6 hidden lg:flex"
           >
             <motion.div
@@ -460,14 +436,14 @@ export function HeroSection({
               transition={{
                 duration: 2.5,
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
               className="flex flex-col items-center space-y-3"
             >
               <div className="w-px h-16 bg-gradient-to-b from-transparent via-blue-400 to-transparent"></div>
               <button
                 onClick={() => {
-                  const aboutSection = document.getElementById("about");
+                  const aboutSection = document.getElementById('about');
                   if (aboutSection) {
                     const elementPosition =
                       aboutSection.getBoundingClientRect().top;
@@ -475,7 +451,7 @@ export function HeroSection({
                       elementPosition + window.pageYOffset - 120;
                     window.scrollTo({
                       top: offsetPosition,
-                      behavior: "smooth",
+                      behavior: 'smooth',
                     });
                   }
                 }}
@@ -501,7 +477,7 @@ export function HeroSection({
         >
           <button
             onClick={() => {
-              const aboutSection = document.getElementById("about");
+              const aboutSection = document.getElementById('about');
               if (aboutSection) {
                 const elementPosition =
                   aboutSection.getBoundingClientRect().top;
@@ -509,7 +485,7 @@ export function HeroSection({
                   elementPosition + window.pageYOffset - 120;
                 window.scrollTo({
                   top: offsetPosition,
-                  behavior: "smooth",
+                  behavior: 'smooth',
                 });
               }
             }}
@@ -528,13 +504,13 @@ export function HeroSection({
             transition={{
               duration: 2,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
             className="flex items-center justify-center w-full"
           >
             <button
               onClick={() => {
-                const aboutSection = document.getElementById("about");
+                const aboutSection = document.getElementById('about');
                 if (aboutSection) {
                   const elementPosition =
                     aboutSection.getBoundingClientRect().top;
@@ -542,7 +518,7 @@ export function HeroSection({
                     elementPosition + window.pageYOffset - 120;
                   window.scrollTo({
                     top: offsetPosition,
-                    behavior: "smooth",
+                    behavior: 'smooth',
                   });
                 }
               }}

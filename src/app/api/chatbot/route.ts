@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { initializeApp, getApps } from "firebase/app";
+import { siteConfig } from '@/config/site';
+import { NextRequest, NextResponse } from 'next/server';
+import { initializeApp, getApps } from 'firebase/app';
 import {
   getFirestore,
   collection,
@@ -10,8 +11,8 @@ import {
   getDocs,
   addDoc,
   serverTimestamp,
-} from "firebase/firestore";
-import OpenAI from "openai";
+} from 'firebase/firestore';
+import OpenAI from 'openai';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -26,14 +27,14 @@ const firebaseConfig = {
 
 // Initialize Firebase
 let db: any = null;
-if (typeof window === "undefined") {
+if (typeof window === 'undefined') {
   try {
     const app = !getApps().length
       ? initializeApp(firebaseConfig)
       : getApps()[0];
     db = getFirestore(app);
   } catch (error) {
-    console.error("Firebase initialization failed:", error);
+    console.error('Firebase initialization failed:', error);
   }
 }
 
@@ -73,7 +74,7 @@ interface ChatbotAnalyticsData {
 export async function GET(request: NextRequest) {
   if (!db) {
     return NextResponse.json(
-      { error: "Database not initialized" },
+      { error: 'Database not initialized' },
       { status: 500 }
     );
   }
@@ -81,38 +82,38 @@ export async function GET(request: NextRequest) {
   try {
     // Extract time range from query params
     const { searchParams } = new URL(request.url);
-    const timeRange = searchParams.get("timeRange") || "30d";
-    const customDays = parseInt(searchParams.get("customDays") || "7");
+    const timeRange = searchParams.get('timeRange') || '30d';
+    const customDays = parseInt(searchParams.get('customDays') || '7');
 
     // Calculate date filter
     const now = new Date();
     let startDate: Date;
 
     switch (timeRange) {
-      case "1d":
+      case '1d':
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
         break;
-      case "7d":
+      case '7d':
         startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
         break;
-      case "30d":
+      case '30d':
         startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         break;
-      case "custom":
+      case 'custom':
         startDate = new Date(now.getTime() - customDays * 24 * 60 * 60 * 1000);
         break;
-      case "all":
+      case 'all':
       default:
         startDate = new Date(0); // Beginning of time
         break;
     }
 
     // Fetch chatbot analytics data
-    const analyticsRef = collection(db, "chatbot_analytics");
+    const analyticsRef = collection(db, 'chatbot_analytics');
     const analyticsQuery = query(
       analyticsRef,
-      where("timestamp", ">=", startDate),
-      orderBy("timestamp", "desc"),
+      where('timestamp', '>=', startDate),
+      orderBy('timestamp', 'desc'),
       limit(1000) // Limit for performance
     );
 
@@ -133,15 +134,18 @@ export async function GET(request: NextRequest) {
       startDate: startDate.toISOString(),
     });
   } catch (error) {
-    console.error("Error fetching chatbot analytics:", error);
+    console.error('Error fetching chatbot analytics:', error);
     return NextResponse.json(
-      { error: "Failed to fetch analytics data" },
+      { error: 'Failed to fetch analytics data' },
       { status: 500 }
     );
   }
 }
 
-function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsData {
+function processAnalyticsData(
+  events: any[],
+  startDate: Date
+): ChatbotAnalyticsData {
   // Initialize counters
   const sessions = new Set<string>();
   const buttonClicks = new Map<string, number>();
@@ -152,7 +156,7 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
   const sessionStartTimes = new Map<string, Date>();
   const sessionEndTimes = new Map<string, Date>();
   const fileTypes = new Map<string, number>();
-  
+
   let totalButtonClicks = 0;
   let totalMessages = 0;
   let totalFileUploads = 0;
@@ -170,15 +174,23 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
   events.forEach((event) => {
     const sessionId = event.sessionId;
     const eventType = event.eventType;
-    const timestamp = event.timestamp?.toDate ? event.timestamp.toDate() : new Date(event.timestamp);
+    const timestamp = event.timestamp?.toDate
+      ? event.timestamp.toDate()
+      : new Date(event.timestamp);
 
     sessions.add(sessionId);
 
     // Track session start/end times
-    if (!sessionStartTimes.has(sessionId) || timestamp < sessionStartTimes.get(sessionId)!) {
+    if (
+      !sessionStartTimes.has(sessionId) ||
+      timestamp < sessionStartTimes.get(sessionId)!
+    ) {
       sessionStartTimes.set(sessionId, timestamp);
     }
-    if (!sessionEndTimes.has(sessionId) || timestamp > sessionEndTimes.get(sessionId)!) {
+    if (
+      !sessionEndTimes.has(sessionId) ||
+      timestamp > sessionEndTimes.get(sessionId)!
+    ) {
       sessionEndTimes.set(sessionId, timestamp);
     }
 
@@ -187,7 +199,10 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
       case 'chatbot_opened':
         chatOpens++;
         const source = event.source || 'button_click';
-        conversationStarters.set(source, (conversationStarters.get(source) || 0) + 1);
+        conversationStarters.set(
+          source,
+          (conversationStarters.get(source) || 0) + 1
+        );
         break;
 
       case 'popup_shown':
@@ -198,7 +213,7 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
         totalButtonClicks++;
         const buttonType = event.buttonType;
         buttonClicks.set(buttonType, (buttonClicks.get(buttonType) || 0) + 1);
-        
+
         if (buttonType === 'message') messageActions++;
         if (buttonType === 'meeting') meetingActions++;
         if (buttonType === 'upload') fileUploadActions++;
@@ -207,12 +222,15 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
       case 'message_sent':
         totalMessages++;
         messageCount++;
-        sessionMessages.set(sessionId, (sessionMessages.get(sessionId) || 0) + 1);
-        
+        sessionMessages.set(
+          sessionId,
+          (sessionMessages.get(sessionId) || 0) + 1
+        );
+
         if (event.messageLength) {
           totalWordCount += Math.ceil(event.messageLength / 5); // Approximate word count
         }
-        
+
         if (event.hasFiles) {
           totalFileUploads++;
         }
@@ -225,7 +243,10 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
           });
         }
         if (event.fileSizes) {
-          totalFileSize += event.fileSizes.reduce((sum: number, size: number) => sum + size, 0);
+          totalFileSize += event.fileSizes.reduce(
+            (sum: number, size: number) => sum + size,
+            0
+          );
         }
         break;
 
@@ -237,19 +258,20 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
     // Track hourly and daily activity
     const hour = timestamp.getHours();
     hourlyActivity.set(hour, (hourlyActivity.get(hour) || 0) + 1);
-    
+
     const dateStr = timestamp.toISOString().split('T')[0];
     dailyActivity.set(dateStr, (dailyActivity.get(dateStr) || 0) + 1);
   });
 
   // Calculate metrics
   const totalSessions = sessions.size;
-  const avgMessagesPerSession = totalSessions > 0 ? totalMessages / totalSessions : 0;
-  
+  const avgMessagesPerSession =
+    totalSessions > 0 ? totalMessages / totalSessions : 0;
+
   // Calculate session durations
   let totalDuration = 0;
   let validDurations = 0;
-  sessions.forEach(sessionId => {
+  sessions.forEach((sessionId) => {
     const start = sessionStartTimes.get(sessionId);
     const end = sessionEndTimes.get(sessionId);
     if (start && end && end > start) {
@@ -257,7 +279,8 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
       validDurations++;
     }
   });
-  const avgSessionDuration = validDurations > 0 ? totalDuration / validDurations / 1000 / 60 : 0; // minutes
+  const avgSessionDuration =
+    validDurations > 0 ? totalDuration / validDurations / 1000 / 60 : 0; // minutes
 
   // Most popular buttons
   const mostPopularButtons = Array.from(buttonClicks.entries())
@@ -271,7 +294,8 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
     .sort((a, b) => b.count - a.count);
 
   // Session length distribution
-  const sessionLengthDistribution = calculateSessionLengthDistribution(sessionMessages);
+  const sessionLengthDistribution =
+    calculateSessionLengthDistribution(sessionMessages);
 
   // Peak hours
   const peakHours = Array.from({ length: 24 }, (_, i) => ({
@@ -290,10 +314,16 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
     .sort((a, b) => b.count - a.count);
 
   // User engagement metrics
-  const bounceSessions = Array.from(sessionMessages.values()).filter(count => count <= 1).length;
-  const bounceRate = totalSessions > 0 ? (bounceSessions / totalSessions) * 100 : 0;
-  const deepEngagementSessions = Array.from(sessionMessages.values()).filter(count => count >= 5).length;
-  const averageWordsPerMessage = messageCount > 0 ? totalWordCount / messageCount : 0;
+  const bounceSessions = Array.from(sessionMessages.values()).filter(
+    (count) => count <= 1
+  ).length;
+  const bounceRate =
+    totalSessions > 0 ? (bounceSessions / totalSessions) * 100 : 0;
+  const deepEngagementSessions = Array.from(sessionMessages.values()).filter(
+    (count) => count >= 5
+  ).length;
+  const averageWordsPerMessage =
+    messageCount > 0 ? totalWordCount / messageCount : 0;
 
   // Conversion metrics
   const conversionMetrics = {
@@ -317,7 +347,10 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
     fileUploadStats: {
       totalUploads: totalFileUploads,
       fileTypes: fileTypesArray,
-      avgFileSize: totalFileUploads > 0 ? Math.round(totalFileSize / totalFileUploads / 1024) : 0, // KB
+      avgFileSize:
+        totalFileUploads > 0
+          ? Math.round(totalFileSize / totalFileUploads / 1024)
+          : 0, // KB
     },
     timeMetrics: {
       peakHours,
@@ -332,24 +365,27 @@ function processAnalyticsData(events: any[], startDate: Date): ChatbotAnalyticsD
       popupToChat: Math.round(conversionMetrics.popupToChat * 10) / 10,
       chatToMessage: Math.round(conversionMetrics.chatToMessage * 10) / 10,
       chatToMeeting: Math.round(conversionMetrics.chatToMeeting * 10) / 10,
-      chatToFileUpload: Math.round(conversionMetrics.chatToFileUpload * 10) / 10,
+      chatToFileUpload:
+        Math.round(conversionMetrics.chatToFileUpload * 10) / 10,
     },
   };
 }
 
-function calculateSessionLengthDistribution(sessionMessages: Map<string, number>) {
+function calculateSessionLengthDistribution(
+  sessionMessages: Map<string, number>
+) {
   const ranges = [
-    { range: "1 message", min: 1, max: 1 },
-    { range: "2-3 messages", min: 2, max: 3 },
-    { range: "4-6 messages", min: 4, max: 6 },
-    { range: "7-10 messages", min: 7, max: 10 },
-    { range: "11+ messages", min: 11, max: Infinity },
+    { range: '1 message', min: 1, max: 1 },
+    { range: '2-3 messages', min: 2, max: 3 },
+    { range: '4-6 messages', min: 4, max: 6 },
+    { range: '7-10 messages', min: 7, max: 10 },
+    { range: '11+ messages', min: 11, max: Infinity },
   ];
 
   return ranges.map(({ range, min, max }) => ({
     range,
     count: Array.from(sessionMessages.values()).filter(
-      count => count >= min && count <= max
+      (count) => count >= min && count <= max
     ).length,
   }));
 }
@@ -360,7 +396,7 @@ function getOpenAI() {
   if (!openai) {
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      console.error("OPENAI_API_KEY not set");
+      console.error('OPENAI_API_KEY not set');
       return null;
     }
     openai = new OpenAI({ apiKey });
@@ -369,34 +405,19 @@ function getOpenAI() {
 }
 
 // System prompt for the chatbot
-const SYSTEM_PROMPT = `You are an AI assistant for Lawrence Hua, an AI Product Manager and Startup Founder. 
-
-Key information about Lawrence:
-- AI Product Manager with technical background in Computer Science (University of Florida) and Information Systems Management (Carnegie Mellon University)
-- Currently building Expired Solutions, an AI platform using computer vision and LLMs to reduce grocery waste by 20%
-- Previously at GRUBBRR: Reduced onboarding time by 60%, shipped AI recommendation engine in 30 days
-- Previously at Bath & Body Works: Built LLM tool that saved teams 18 hours per week
-- Technical skills: Python, ML models, computer vision, GPT integrations, data strategy
-- Product skills: Roadmap planning, A/B testing, cross-functional leadership
-
-Your role:
-1. Answer questions about Lawrence's experience, skills, and projects
-2. Be friendly, professional, and conversational
-3. If asked about scheduling a meeting, guide them to use the meeting scheduling feature
-4. Keep responses concise (2-4 sentences for simple questions, longer for complex ones)
-5. If you don't know something specific, be honest and suggest they contact Lawrence directly
-
-Tone: Professional but warm, enthusiastic about AI and product management.`;
+const SYSTEM_PROMPT = `You are the portfolio assistant for ${siteConfig.name}, ${siteConfig.title}.
+Use only these configured facts: ${JSON.stringify({ about: siteConfig.about, skills: siteConfig.skillsData, timeline: siteConfig.timelineData, projects: siteConfig.projectsData })}.
+Sample content is illustrative, not verified biography. Do not invent achievements. If information is missing, suggest contacting the portfolio owner. Keep answers concise and helpful.`;
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const message = formData.get("message") as string;
-    const historyJson = formData.get("history") as string;
+    const message = formData.get('message') as string;
+    const historyJson = formData.get('history') as string;
 
     if (!message) {
       return NextResponse.json(
-        { error: "Message is required" },
+        { error: 'Message is required' },
         { status: 400 }
       );
     }
@@ -404,86 +425,85 @@ export async function POST(request: NextRequest) {
     // Parse conversation history
     let history: any[] = [];
     try {
-      history = JSON.parse(historyJson || "[]");
+      history = JSON.parse(historyJson || '[]');
     } catch (e) {
-      console.error("Failed to parse history:", e);
+      console.error('Failed to parse history:', e);
     }
 
     // Check for special commands
     const lowerMessage = message.toLowerCase().trim();
-    
-    // Easter egg: Myley
-    if (lowerMessage.includes("myley") || lowerMessage.includes("girlfriend")) {
-      return NextResponse.json({
-        response: "🔐 That's a special topic! Please enter the password to learn more about Myley.",
-        needsPassword: true,
-        isMyleyResponse: true,
-      });
-    }
-
-    // Check for password
-    if (lowerMessage === "forever" || lowerMessage === "myley forever") {
-      return NextResponse.json({
-        response: "❤️ Correct! Lawrence and Myley have been together since 2020. She's his biggest supporter and the reason he pushes to be better every day. They love exploring new restaurants, traveling, and binge-watching shows together!",
-        isMyleyResponse: true,
-        needsPassword: false,
-      });
-    }
 
     // Meeting scheduling command
-    if (lowerMessage === "/meeting" || lowerMessage.includes("schedule a meeting") || lowerMessage.includes("book a call")) {
+    if (
+      lowerMessage === '/meeting' ||
+      lowerMessage.includes('schedule a meeting') ||
+      lowerMessage.includes('book a call')
+    ) {
       return NextResponse.json({
-        response: "I'd be happy to help you schedule a meeting with Lawrence! 📅 Please use the calendar picker that should appear, or visit: https://calendly.com/lawrencehua",
-        showCalendar: true,
+        response: `Contact ${siteConfig.name} at ${siteConfig.email} to arrange a conversation.`,
+        showCalendar: siteConfig.features.scheduling,
       });
     }
 
     // Contact/message command
-    if (lowerMessage === "/message" || lowerMessage.includes("send a message") || lowerMessage.includes("contact")) {
+    if (
+      lowerMessage === '/message' ||
+      lowerMessage.includes('send a message') ||
+      lowerMessage.includes('contact')
+    ) {
       return NextResponse.json({
-        response: "You can reach Lawrence directly via the contact form on this site or through LinkedIn. Would you like me to guide you to the contact section?",
+        response: `You can reach ${siteConfig.name} at ${siteConfig.email}, or use the contact form.`,
       });
     }
 
     // Prepare messages for OpenAI
     const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
+      { role: 'system', content: SYSTEM_PROMPT },
       ...history.map((msg: any) => ({
         role: msg.role,
         content: msg.content,
       })),
-      { role: "user", content: message },
+      { role: 'user', content: message },
     ];
 
     // Call OpenAI API
     const openaiClient = getOpenAI();
     if (!openaiClient) {
       return NextResponse.json(
-        { error: "OpenAI not configured", response: "Chatbot is temporarily unavailable. Please try again later!" },
+        {
+          error: 'OpenAI not configured',
+          response:
+            'Chatbot is temporarily unavailable. Please try again later!',
+        },
         { status: 503 }
       );
     }
-    
+
     const completion = await openaiClient.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: 'gpt-4o-mini',
       messages: messages as any,
       max_tokens: 500,
       temperature: 0.7,
     });
 
-    const response = completion.choices[0]?.message?.content || "I'm sorry, I couldn't process that request. Please try again.";
+    const response =
+      completion.choices[0]?.message?.content ||
+      "I'm sorry, I couldn't process that request. Please try again.";
 
     return NextResponse.json({
       response,
-      isMyleyResponse: false,
+      isspecialTopicResponse: false,
       needsPassword: false,
     });
-
   } catch (error) {
-    console.error("Error in chatbot POST:", error);
+    console.error('Error in chatbot POST:', error);
     return NextResponse.json(
-      { error: "Failed to process message", response: "I'm having trouble connecting right now. Please try again in a moment!" },
+      {
+        error: 'Failed to process message',
+        response:
+          "I'm having trouble connecting right now. Please try again in a moment!",
+      },
       { status: 500 }
     );
   }
-} 
+}

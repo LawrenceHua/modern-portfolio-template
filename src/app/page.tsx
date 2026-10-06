@@ -1,7 +1,9 @@
-"use client";
+'use client';
+import { trackButtonClick as recordButtonClick } from '@/lib/analytics';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiBriefcase,
   FiTrendingUp,
@@ -23,25 +25,25 @@ import {
   FiBookOpen,
   FiPause,
   FiPlay,
-} from "react-icons/fi";
-import { initializeApp, getApps } from "firebase/app";
+} from 'react-icons/fi';
+import { initializeApp, getApps } from 'firebase/app';
 import {
   getFirestore,
   collection,
   addDoc,
   serverTimestamp,
-} from "firebase/firestore";
-import { ModernNavigation } from "../components/layout/ModernNavigation";
-import { HeroSection } from "../components/sections/HeroSection";
-import { AboutSection } from "../components/sections/AboutSection";
-import { SkillsSection } from "../components/sections/SkillsSection";
-import { TimelineSection } from "../components/sections/TimelineSection";
-import { ProjectsSection } from "../components/sections/ProjectsSection";
+} from 'firebase/firestore';
+import { ModernNavigation } from '../components/layout/ModernNavigation';
+import { HeroSection } from '../components/sections/HeroSection';
+import { AboutSection } from '../components/sections/AboutSection';
+import { SkillsSection } from '../components/sections/SkillsSection';
+import { TimelineSection } from '../components/sections/TimelineSection';
+import { ProjectsSection } from '../components/sections/ProjectsSection';
 // import { TestimonialsSection } from "../components/sections/TestimonialsSection";
-import { ContactSection } from "../components/sections/ContactSection";
-import FloatingChatbot from "../components/chatbot/FloatingChatbot";
-import VisitorTracker from "../components/analytics/VisitorTracker";
-import { geolocationManager } from "../lib/geolocation";
+import { ContactSection } from '../components/sections/ContactSection';
+import FloatingChatbot from '../components/chatbot/FloatingChatbot';
+import VisitorTracker from '../components/analytics/VisitorTracker';
+import { geolocationManager } from '../lib/geolocation';
 
 // Firebase config (using environment variables)
 const firebaseConfig = {
@@ -64,98 +66,92 @@ interface TourStep {
   duration: number;
   highlights?: string[];
   position:
-    | "top-right"
-    | "top-left"
-    | "bottom-right"
-    | "bottom-left"
-    | "center"
-    | "bottom-center"
-    | "work-experience-top"
-    | "education-left"
-    | "bottom-right-lower"
-    | "education-below"
-    | "skills-title-left"
-    | "education-right-of-arrows"
-    | "work-experience-left-of-arrows"
-    | "project-next-to-arrows"
-    | "project-next-to-arrows-2";
+    | 'top-right'
+    | 'top-left'
+    | 'bottom-right'
+    | 'bottom-left'
+    | 'center'
+    | 'bottom-center'
+    | 'work-experience-top'
+    | 'education-left'
+    | 'bottom-right-lower'
+    | 'education-below'
+    | 'skills-title-left'
+    | 'education-right-of-arrows'
+    | 'work-experience-left-of-arrows'
+    | 'project-next-to-arrows'
+    | 'project-next-to-arrows-2';
 }
 
 const tourSteps: TourStep[] = [
   {
-    id: "intro",
-    title: "👋 Welcome! I'm YOUR_NAME.",
-    content:
-      "A Product Manager with a passion for building innovative, user-centric products. Let's take a quick tour of my work.",
-    targetSection: "hero",
+    id: 'intro',
+    title: `👋 Welcome! I'm ${siteConfig.name}.`,
+    content: siteConfig.tour.intro,
+    targetSection: 'hero',
     icon: <FiUser className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-700",
+    color: 'from-gray-600 to-gray-700',
     duration: 8000,
-    position: "center",
+    position: 'center',
   },
   {
-    id: "skills",
-    title: "🛠️ My Core Skills",
-    content:
-      "I specialize in the full product lifecycle, from market research to product strategy. My expertise lies in Product Management, User Research, and Cross-functional Leadership.",
-    targetSection: "skills",
+    id: 'skills',
+    title: '🛠️ My Core Skills',
+    content: siteConfig.tour.skills,
+    targetSection: 'skills',
     icon: <FiTool className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-700",
+    color: 'from-gray-600 to-gray-700',
     duration: 10000,
     highlights: [
-      "Product Management",
-      "User Research",
-      "Cross-functional Leadership",
+      'Product Management',
+      'User Research',
+      'Cross-functional Leadership',
     ],
-    position: "center",
+    position: 'center',
   },
   {
-    id: "education",
-    title: "🎓 Educational Background",
-    content:
-      "My journey started with a strong educational foundation, combining business and technical knowledge to drive product success.",
-    targetSection: "timeline",
+    id: 'education',
+    title: '🎓 Educational Background',
+    content: siteConfig.tour.education,
+    targetSection: 'timeline',
     icon: <FiBookOpen className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-700",
+    color: 'from-gray-600 to-gray-700',
     duration: 10000,
-    highlights: ["Business Degree", "Technical Background"],
-    position: "center",
+    highlights: ['Business Degree', 'Technical Background'],
+    position: 'center',
   },
   {
-    id: "experience",
-    title: "💼 Professional Journey",
-    content:
-      "I've built a diverse skillset through various product roles, from startups to enterprise companies, focusing on delivering value to users and businesses.",
-    targetSection: "timeline",
+    id: 'experience',
+    title: '💼 Professional Journey',
+    content: siteConfig.tour.experience,
+    targetSection: 'timeline',
     icon: <FiBriefcase className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-700",
+    color: 'from-gray-600 to-gray-700',
     duration: 12000,
-    highlights: ["Product Manager", "Product Strategy", "User Experience"],
-    position: "center",
+    highlights: ['Product Manager', 'Product Strategy', 'User Experience'],
+    position: 'center',
   },
   {
-    id: "project-1",
-    title: "💡 Featured Project: Product Launch",
-    content:
-      "A successful product launch that improved user engagement and drove business metrics. This project demonstrates my ability to lead cross-functional teams and deliver results.",
-    targetSection: "projects",
+    id: 'project-1',
+    title: siteConfig.projectsData.all[0].title,
+    content: siteConfig.tour.project,
+    targetSection: 'projects',
     icon: <FiTarget className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-700",
+    color: 'from-gray-600 to-gray-700',
     duration: 10000,
-    highlights: ["Product Launch", "User Engagement", "Business Impact"],
-    position: "center",
+    highlights: ['Product Launch', 'User Engagement', 'Business Impact'],
+    position: 'center',
   },
   {
-    id: "project-2",
-    title: "💡 Featured Project: Feature Development",
-    content:
-      "Led the development of a key feature that increased user satisfaction and retention. This project showcases my product strategy and execution skills.",
-    targetSection: "projects",
+    id: 'project-2',
+    title: siteConfig.projectsData.all[1].title,
+    content: siteConfig.tour.project,
+    targetSection: 'projects',
     icon: <FiTrendingUp className="w-5 h-5" />,
-    color: "from-gray-600 to-gray-700",
+    color: 'from-gray-600 to-gray-700',
     duration: 10000,
-    highlights: ["Feature Development", "User Satisfaction", "Retention"],
-    position: "center",
+    highlights: ['Feature Development', 'User Satisfaction', 'Retention'],
+    position: 'center',
   },
 ];
 
@@ -175,17 +171,14 @@ const TourArrows = ({
   const stepTargets = {
     0: [], // Step 1: Intro - no arrows
     1: [
-      "skill-product-strategy",
-      "skill-data-analysis",
-      "skill-stakeholder-management",
+      'skill-product-strategy',
+      'skill-data-analysis',
+      'skill-stakeholder-management',
     ], // Step 2: Skills - pointing to the 3 specific skill titles
-    2: [
-      "timeline-carnegie-mellon-university",
-      "timeline-university-of-florida",
-    ], // Step 3: Education - pointing to degree titles
-    3: ["work-experience-title"], // Step 4: Work Experience - single arrow at title
-    4: ["project-expired-solutions"], // Step 5: Expired Solutions Project - pointing to project card
-    5: ["project-bbw"], // Step 6: BBW Project
+    2: ['timeline', 'timeline'], // Step 3: Education - pointing to degree titles
+    3: ['work-experience-title'], // Step 4: Work Experience - single arrow at title
+    4: ['project-featured-0'], // Step 5: Sample Project Project - pointing to project card
+    5: ['project-featured-1'], // Step 6: Example Company Project
   };
 
   const targets = stepTargets[currentStep as keyof typeof stepTargets] || [];
@@ -199,11 +192,11 @@ const TourArrows = ({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0 }}
           transition={{ delay: index * 0.2, duration: 0.4 }}
-          className={`${isPaused ? "absolute" : "fixed"} z-50 pointer-events-none will-change-transform`}
+          className={`${isPaused ? 'absolute' : 'fixed'} z-50 pointer-events-none will-change-transform`}
           style={{
             ...getArrowPosition(target, currentStep, isPaused),
-            willChange: "transform, opacity",
-            backfaceVisibility: "hidden",
+            willChange: 'transform, opacity',
+            backfaceVisibility: 'hidden',
           }}
         >
           <div className="relative">
@@ -215,7 +208,7 @@ const TourArrows = ({
               transition={{
                 duration: 2, // Slower animation for better performance
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
               className={`flex items-center justify-center w-8 h-8 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${tourSteps[currentStep].color} text-white shadow-lg md:shadow-2xl border-2 md:border-4 border-white`}
             >
@@ -225,7 +218,7 @@ const TourArrows = ({
             {/* Simplified Arrow tail/line */}
             <div
               className={`absolute top-6 md:top-12 left-1/2 transform -translate-x-1/2 w-0.5 md:w-1 bg-gradient-to-b ${tourSteps[currentStep].color} rounded-full`}
-              style={{ height: window.innerWidth < 768 ? "30px" : "60px" }}
+              style={{ height: window.innerWidth < 768 ? '30px' : '60px' }}
             />
 
             {/* Simplified pulse effect with reduced animation */}
@@ -237,7 +230,7 @@ const TourArrows = ({
               transition={{
                 duration: 2.5, // Slower for better performance
                 repeat: Infinity,
-                ease: "easeInOut",
+                ease: 'easeInOut',
               }}
               className={`absolute inset-0 w-8 h-8 md:w-16 md:h-16 rounded-full bg-gradient-to-r ${tourSteps[currentStep].color}`}
             />
@@ -259,7 +252,7 @@ const RadarArrow = ({
   onScrollToSection: (sectionId: string, stepIndex?: number) => void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [direction, setDirection] = useState<"up" | "down">("down");
+  const [direction, setDirection] = useState<'up' | 'down'>('down');
   const [distance, setDistance] = useState(0);
 
   useEffect(() => {
@@ -289,16 +282,16 @@ const RadarArrow = ({
       const isElementVisible = elementTop < viewportHeight && elementBottom > 0;
 
       // Calculate distance and direction
-      let scrollDirection: "up" | "down" = "down";
+      let scrollDirection: 'up' | 'down' = 'down';
       let scrollDistance = 0;
 
       if (elementTop > viewportHeight) {
         // Element is below viewport
-        scrollDirection = "down";
+        scrollDirection = 'down';
         scrollDistance = elementTop - viewportHeight;
       } else if (elementBottom < 0) {
         // Element is above viewport
-        scrollDirection = "up";
+        scrollDirection = 'up';
         scrollDistance = Math.abs(elementBottom);
       }
 
@@ -319,13 +312,13 @@ const RadarArrow = ({
 
     // Check on scroll and resize with debouncing
     checkScrollPosition();
-    window.addEventListener("scroll", debouncedScrollCheck, { passive: true });
-    window.addEventListener("resize", debouncedScrollCheck, { passive: true });
+    window.addEventListener('scroll', debouncedScrollCheck, { passive: true });
+    window.addEventListener('resize', debouncedScrollCheck, { passive: true });
 
     return () => {
       clearTimeout(timeoutId);
-      window.removeEventListener("scroll", debouncedScrollCheck);
-      window.removeEventListener("resize", debouncedScrollCheck);
+      window.removeEventListener('scroll', debouncedScrollCheck);
+      window.removeEventListener('resize', debouncedScrollCheck);
     };
   }, [isActive, currentStep]);
 
@@ -351,7 +344,7 @@ const RadarArrow = ({
           transition={{
             duration: 4, // Slower rotation for better performance
             repeat: Infinity,
-            ease: "linear",
+            ease: 'linear',
           }}
           className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-dashed border-purple-400 dark:border-purple-300"
         />
@@ -365,15 +358,15 @@ const RadarArrow = ({
         >
           <motion.div
             animate={{
-              y: direction === "up" ? [-1, -3, -1] : [1, 3, 1],
+              y: direction === 'up' ? [-1, -3, -1] : [1, 3, 1],
             }}
             transition={{
               duration: 2, // Slower animation
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           >
-            {direction === "up" ? (
+            {direction === 'up' ? (
               <FiArrowUp className="w-6 h-6 md:w-8 md:h-8 text-white" />
             ) : (
               <FiArrowDown className="w-6 h-6 md:w-8 md:h-8 text-white" />
@@ -383,14 +376,14 @@ const RadarArrow = ({
 
         {/* Simplified Distance Indicator */}
         <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap">
-          {direction === "up" ? "↑" : "↓"} {Math.round(distance / 100)}00px
+          {direction === 'up' ? '↑' : '↓'} {Math.round(distance / 100)}00px
         </div>
       </div>
 
       {/* Simplified Help Text */}
       <div className="absolute -left-32 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm px-3 py-2 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-90">
         <div className="font-semibold">
-          Tour content {direction === "up" ? "above" : "below"}
+          Tour content {direction === 'up' ? 'above' : 'below'}
         </div>
         <div className="text-xs text-gray-600 dark:text-gray-400">
           Click to navigate
@@ -406,8 +399,8 @@ const getArrowPosition = (
   currentStep: number,
   isPaused: boolean = false
 ) => {
-  if (typeof window === "undefined") {
-    return { top: "50%", left: "50%", right: "auto" };
+  if (typeof window === 'undefined') {
+    return { top: '50%', left: '50%', right: 'auto' };
   }
 
   const targetElement = document.getElementById(targetId);
@@ -430,26 +423,26 @@ const getArrowPosition = (
       return {
         top: `${absoluteTop}px`,
         left: `${absoluteLeft}px`,
-        right: "auto",
+        right: 'auto',
       };
     } else {
       // When active, use fixed positioning relative to viewport
       const top = rect.top - topOffset;
       const left = rect.left + rect.width / 2 - arrowSize;
 
-      return { top: `${top}px`, left: `${left}px`, right: "auto" };
+      return { top: `${top}px`, left: `${left}px`, right: 'auto' };
     }
   }
 
   // Fallback if element not found (e.g., during transitions)
-  return { top: "-500px", left: "-500px", right: "auto" };
+  return { top: '-500px', left: '-500px', right: 'auto' };
 };
 
 export default function ModernHome() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const [contactFormType, setContactFormType] = useState<
-    "none" | "message" | "calendar"
-  >("message");
+    'none' | 'message' | 'calendar'
+  >('message');
 
   // Tour state
   const [isActive, setIsActive] = useState(false);
@@ -471,45 +464,33 @@ export default function ModernHome() {
   const [db, setDb] = useState<any>(null);
 
   // Mobile debug logging function
-  const debugLog = async (message: string, data?: any) => {
-    console.log(message, data); // Keep console log for desktop
-    try {
-      await fetch("/api/debug", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message,
-          data: data ? JSON.stringify(data) : undefined,
-          timestamp: Date.now(),
-        }),
-      });
-    } catch (error) {
-      console.error("Failed to send debug log:", error);
-    }
+  const debugLog = (message: string, data?: unknown) => {
+    if (process.env.NODE_ENV === 'development') console.debug(message, data);
   };
 
   // Component mount debugging
   useEffect(() => {
-    console.log("🏠 ModernHome component mounted");
+    console.log('🏠 ModernHome component mounted');
     return () => {
-      console.log("🏠 ModernHome component unmounting");
+      console.log('🏠 ModernHome component unmounting');
     };
   }, []);
 
   // Initialize Firebase and start tracking
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       let app;
       if (!getApps().length) {
+        if (!firebaseConfig.apiKey || !firebaseConfig.projectId) return;
         app = initializeApp(firebaseConfig);
-        console.log("🔥 Firebase app initialized");
+        console.log('🔥 Firebase app initialized');
       } else {
         app = getApps()[0];
-        console.log("🔥 Using existing Firebase app");
+        console.log('🔥 Using existing Firebase app');
       }
       const firestore = getFirestore(app);
       setDb(firestore);
-      console.log("🔥 Firestore database ready");
+      console.log('🔥 Firestore database ready');
 
       // Start page view tracking
       trackPageView(firestore);
@@ -520,54 +501,35 @@ export default function ModernHome() {
 
   // Tour tracking functions
   const getSessionId = () => {
-    let sessionId = sessionStorage.getItem("analytics_session_id");
+    let sessionId = sessionStorage.getItem('analytics_session_id');
     if (!sessionId) {
       sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem("analytics_session_id", sessionId);
+      sessionStorage.setItem('analytics_session_id', sessionId);
     }
     return sessionId;
   };
 
   // Track important button clicks for analytics
-  const trackButtonClick = async (buttonType: string, buttonText: string) => {
-    try {
-      await fetch("/api/track-button-v2", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          buttonType,
-          buttonText,
-          page: window.location.pathname,
-          sessionId: getSessionId(),
-          userAgent: navigator.userAgent,
-        }),
-      });
-      console.log(`✅ Button click tracked: ${buttonType}`);
-    } catch (error) {
-      console.error("❌ Error tracking button click:", error);
-    }
-  };
+  const trackButtonClick = recordButtonClick;
 
   // Device analytics tracking function
   const trackDeviceInfo = async (firestore: any) => {
     if (!firestore) {
-      console.warn("❌ Firestore not initialized, cannot track device info");
+      console.warn('❌ Firestore not initialized, cannot track device info');
       return;
     }
 
     try {
-      console.log("📱 Tracking device analytics...");
+      console.log('📱 Tracking device analytics...');
 
       // Get geolocation data using centralized manager
       let geoData = null;
       try {
         geoData = await geolocationManager.getGeolocation();
-        console.log("🌍 Geolocation data obtained for device analytics");
+        console.log('🌍 Geolocation data obtained for device analytics');
       } catch (geoError) {
         console.log(
-          "🌍 Geolocation fetch failed for device analytics, using defaults:",
+          '🌍 Geolocation fetch failed for device analytics, using defaults:',
           geoError
         );
       }
@@ -576,15 +538,15 @@ export default function ModernHome() {
       const determineDeviceType = (userAgent: string) => {
         const ua = userAgent.toLowerCase();
         if (
-          ua.includes("mobile") ||
-          ua.includes("android") ||
-          ua.includes("iphone")
+          ua.includes('mobile') ||
+          ua.includes('android') ||
+          ua.includes('iphone')
         ) {
-          return "mobile";
-        } else if (ua.includes("tablet") || ua.includes("ipad")) {
-          return "tablet";
+          return 'mobile';
+        } else if (ua.includes('tablet') || ua.includes('ipad')) {
+          return 'tablet';
         } else {
-          return "desktop";
+          return 'desktop';
         }
       };
 
@@ -592,43 +554,43 @@ export default function ModernHome() {
       const extractBrowserInfo = (userAgent: string) => {
         const ua = userAgent.toLowerCase();
         if (
-          ua.includes("chrome") &&
-          !ua.includes("edg") &&
-          !ua.includes("opr")
+          ua.includes('chrome') &&
+          !ua.includes('edg') &&
+          !ua.includes('opr')
         ) {
-          return "Chrome";
-        } else if (ua.includes("firefox")) {
-          return "Firefox";
-        } else if (ua.includes("safari") && !ua.includes("chrome")) {
-          return "Safari";
-        } else if (ua.includes("edg")) {
-          return "Edge";
-        } else if (ua.includes("opr")) {
-          return "Opera";
+          return 'Chrome';
+        } else if (ua.includes('firefox')) {
+          return 'Firefox';
+        } else if (ua.includes('safari') && !ua.includes('chrome')) {
+          return 'Safari';
+        } else if (ua.includes('edg')) {
+          return 'Edge';
+        } else if (ua.includes('opr')) {
+          return 'Opera';
         } else {
-          return "Unknown";
+          return 'Unknown';
         }
       };
 
       // Helper function to extract OS info
       const extractOSInfo = (userAgent: string) => {
         const ua = userAgent.toLowerCase();
-        if (ua.includes("windows")) {
-          return "Windows";
-        } else if (ua.includes("mac")) {
-          return "macOS";
-        } else if (ua.includes("linux")) {
-          return "Linux";
-        } else if (ua.includes("android")) {
-          return "Android";
+        if (ua.includes('windows')) {
+          return 'Windows';
+        } else if (ua.includes('mac')) {
+          return 'macOS';
+        } else if (ua.includes('linux')) {
+          return 'Linux';
+        } else if (ua.includes('android')) {
+          return 'Android';
         } else if (
-          ua.includes("ios") ||
-          ua.includes("iphone") ||
-          ua.includes("ipad")
+          ua.includes('ios') ||
+          ua.includes('iphone') ||
+          ua.includes('ipad')
         ) {
-          return "iOS";
+          return 'iOS';
         } else {
-          return "Unknown";
+          return 'Unknown';
         }
       };
 
@@ -640,21 +602,21 @@ export default function ModernHome() {
         screenSize: `${window.screen.width}x${window.screen.height}`,
         userAgent: navigator.userAgent,
         timestamp: serverTimestamp(),
-        country: geoData?.country_name || "Unknown",
-        region: geoData?.region || "Unknown",
-        city: geoData?.city || "Unknown",
+        country: geoData?.country_name || 'Unknown',
+        region: geoData?.region || 'Unknown',
+        city: geoData?.city || 'Unknown',
         latitude: geoData?.latitude || null,
         longitude: geoData?.longitude || null,
-        timezone: geoData?.timezone || "Unknown",
-        ip: geoData?.ip || "Unknown",
+        timezone: geoData?.timezone || 'Unknown',
+        ip: geoData?.ip || 'Unknown',
       };
 
       const deviceDocRef = await addDoc(
-        collection(firestore, "analytics_device_info_v2"),
+        collection(firestore, 'analytics_device_info_v2'),
         deviceInfo
       );
 
-      console.log("✅ Device analytics tracked successfully", {
+      console.log('✅ Device analytics tracked successfully', {
         docId: deviceDocRef.id,
         deviceType: deviceInfo.deviceType,
         browser: deviceInfo.browser,
@@ -662,90 +624,90 @@ export default function ModernHome() {
         screenSize: deviceInfo.screenSize,
       });
     } catch (error) {
-      console.error("❌ Error tracking device analytics:", error);
+      console.error('❌ Error tracking device analytics:', error);
     }
   };
 
   const trackTourEvent = async (
     eventType:
-      | "viewed"
-      | "clicked"
-      | "completed"
-      | "skipped"
-      | "tour_cta_action",
+      | 'viewed'
+      | 'clicked'
+      | 'completed'
+      | 'skipped'
+      | 'tour_cta_action',
     stepId?: string,
     stepIndex?: number,
-    ctaAction?: "message" | "meeting" | "restart"
+    ctaAction?: 'message' | 'meeting' | 'restart'
   ) => {
     console.log(
       `📊 trackTourEvent called with: ${eventType}, stepId: ${stepId}, stepIndex: ${stepIndex}`
     );
 
     if (!db) {
-      console.warn("❌ Firebase not initialized, cannot track tour event");
+      console.warn('❌ Firebase not initialized, cannot track tour event');
       return;
     }
 
     try {
-      console.log("📊 Creating tour event object...");
+      console.log('📊 Creating tour event object...');
       // Create base tour event matching v2 collection structure
       const tourEvent: any = {
-        tourStep: stepId || "unknown",
+        tourStep: stepId || 'unknown',
         action: eventType,
         sessionId: getSessionId(),
         timeOnStep: (stepIndex || 0) * 1000, // Convert to milliseconds
         timestamp: serverTimestamp(),
         location: {
-          country: "Unknown",
-          region: "Unknown",
-          city: "Unknown",
+          country: 'Unknown',
+          region: 'Unknown',
+          city: 'Unknown',
         },
         metadata: {
           stepIndex: stepIndex || 0,
           ctaAction: ctaAction || null,
           userAgent: navigator.userAgent,
-          referrer: document.referrer || "direct",
+          referrer: document.referrer || 'direct',
         },
       };
 
-      console.log("📊 Base tour event created:", {
+      console.log('📊 Base tour event created:', {
         ...tourEvent,
-        timestamp: "serverTimestamp()",
+        timestamp: 'serverTimestamp()',
       });
 
       // Try to add geolocation using centralized manager
       try {
         const geoData = await geolocationManager.getGeolocation();
-        tourEvent.location.country = geoData.country_name || "Unknown";
-        tourEvent.location.region = geoData.region || "Unknown";
-        tourEvent.location.city = geoData.city || "Unknown";
-        console.log("🌍 Geolocation added to tour event:", {
+        tourEvent.location.country = geoData.country_name || 'Unknown';
+        tourEvent.location.region = geoData.region || 'Unknown';
+        tourEvent.location.city = geoData.city || 'Unknown';
+        console.log('🌍 Geolocation added to tour event:', {
           country: tourEvent.location.country,
           region: tourEvent.location.region,
           city: tourEvent.location.city,
         });
       } catch (geoError) {
-        console.log("🌍 Geolocation fetch failed, using defaults:", geoError);
+        console.log('🌍 Geolocation fetch failed, using defaults:', geoError);
       }
 
-      console.log("📊 Saving to Firebase...");
+      console.log('📊 Saving to Firebase...');
       const docRef = await addDoc(
-        collection(db, "analytics_tour_interactions_v2"),
+        collection(db, 'analytics_tour_interactions_v2'),
         tourEvent
       );
       console.log(`✅ Tour event tracked successfully: ${eventType}`, {
         docId: docRef.id,
-        eventData: { ...tourEvent, timestamp: "serverTimestamp()" },
+        eventData: { ...tourEvent, timestamp: 'serverTimestamp()' },
       });
     } catch (error) {
-      console.error("❌ Error tracking tour event:", error);
+      console.error('❌ Error tracking tour event:', error);
     }
   };
 
   // Page view tracking function with time tracking
   const trackPageView = async (firestore: any) => {
     if (!firestore) {
-      console.warn("❌ Firestore not initialized, cannot track page view");
+      console.warn('❌ Firestore not initialized, cannot track page view');
       return;
     }
 
@@ -753,39 +715,39 @@ export default function ModernHome() {
     let pageViewDocRef: any = null;
 
     try {
-      console.log("📊 Tracking page view...");
+      console.log('📊 Tracking page view...');
 
       // Get geolocation data using centralized manager
       let geoData = null;
       try {
         geoData = await geolocationManager.getGeolocation();
-        console.log("🌍 Geolocation data obtained for page view");
+        console.log('🌍 Geolocation data obtained for page view');
       } catch (geoError) {
-        console.log("🌍 Geolocation fetch failed, using defaults:", geoError);
+        console.log('🌍 Geolocation fetch failed, using defaults:', geoError);
       }
 
       const pageView = {
         page: window.location.pathname,
         userAgent: navigator.userAgent,
-        referrer: document.referrer || "direct",
+        referrer: document.referrer || 'direct',
         screenSize: `${window.screen.width}x${window.screen.height}`,
         timeOnPage: 0,
         sessionId: getSessionId(),
         timestamp: serverTimestamp(),
-        country: geoData?.country_name || "Unknown",
-        region: geoData?.region || "Unknown",
-        city: geoData?.city || "Unknown",
+        country: geoData?.country_name || 'Unknown',
+        region: geoData?.region || 'Unknown',
+        city: geoData?.city || 'Unknown',
         latitude: geoData?.latitude || null,
         longitude: geoData?.longitude || null,
-        timezone: geoData?.timezone || "Unknown",
-        ip: geoData?.ip || "Unknown",
+        timezone: geoData?.timezone || 'Unknown',
+        ip: geoData?.ip || 'Unknown',
       };
 
       pageViewDocRef = await addDoc(
-        collection(firestore, "page_views"),
+        collection(firestore, 'page_views'),
         pageView
       );
-      console.log("✅ Page view tracked successfully", {
+      console.log('✅ Page view tracked successfully', {
         docId: pageViewDocRef.id,
         userAgent: navigator.userAgent,
         isMobile: /Mobile|Android|iPhone|iPad/.test(navigator.userAgent),
@@ -797,11 +759,11 @@ export default function ModernHome() {
         if (timeSpent > 5 && pageViewDocRef) {
           // Only update if spent more than 5 seconds
           try {
-            const { updateDoc } = await import("firebase/firestore");
+            const { updateDoc } = await import('firebase/firestore');
             await updateDoc(pageViewDocRef, { timeOnPage: timeSpent });
             console.log(`⏱️ Updated time on page: ${timeSpent}s`);
           } catch (error) {
-            console.error("❌ Error updating time on page:", error);
+            console.error('❌ Error updating time on page:', error);
           }
         }
       };
@@ -822,8 +784,8 @@ export default function ModernHome() {
       const timeUpdateInterval = setInterval(updateTimeOnPage, 30000);
 
       // Add event listeners
-      window.addEventListener("beforeunload", handleBeforeUnload);
-      document.addEventListener("visibilitychange", handleVisibilityChange);
+      window.addEventListener('beforeunload', handleBeforeUnload);
+      document.addEventListener('visibilitychange', handleVisibilityChange);
 
       // Cleanup function (though this won't run on page unload)
       setTimeout(
@@ -833,13 +795,13 @@ export default function ModernHome() {
         30 * 60 * 1000
       ); // Stop after 30 minutes max
     } catch (error) {
-      console.error("❌ Error tracking page view:", error);
+      console.error('❌ Error tracking page view:', error);
     }
   };
 
   // Letter-by-letter highlighting function
   const renderHighlightedText = (text: string, highlightIndex: number) => {
-    const characters = text.split("");
+    const characters = text.split('');
 
     return (
       <span className="text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -848,12 +810,12 @@ export default function ModernHome() {
             key={index}
             className={`transition-colors duration-200 ease-out ${
               highlightIndex === -2
-                ? "text-gray-600 dark:text-gray-300" // Show full text without highlighting
+                ? 'text-gray-600 dark:text-gray-300' // Show full text without highlighting
                 : highlightIndex === -1
-                  ? "text-gray-600 dark:text-gray-300" // All highlights cleared
+                  ? 'text-gray-600 dark:text-gray-300' // All highlights cleared
                   : index <= highlightIndex
-                    ? "text-white dark:text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.6)] dark:drop-shadow-[0_0_12px_rgba(96,165,250,0.8)]"
-                    : "text-gray-400 dark:text-gray-500 opacity-60"
+                    ? 'text-white dark:text-white drop-shadow-[0_0_8px_rgba(59,130,246,0.6)] dark:drop-shadow-[0_0_12px_rgba(96,165,250,0.8)]'
+                    : 'text-gray-400 dark:text-gray-500 opacity-60'
             }`}
           >
             {char}
@@ -868,8 +830,8 @@ export default function ModernHome() {
     // Wait for chatbot to open, then trigger message flow
     setTimeout(() => {
       // This will trigger the /message command in the chatbot
-      const event = new CustomEvent("triggerChatbotCommand", {
-        detail: { command: "message" },
+      const event = new CustomEvent('triggerChatbotCommand', {
+        detail: { command: 'message' },
       });
       window.dispatchEvent(event);
     }, 500);
@@ -880,14 +842,14 @@ export default function ModernHome() {
     // Wait for chatbot to open, then trigger meeting flow
     setTimeout(() => {
       // This will trigger the /meeting command in the chatbot
-      const event = new CustomEvent("triggerChatbotCommand", {
-        detail: { command: "meeting" },
+      const event = new CustomEvent('triggerChatbotCommand', {
+        detail: { command: 'meeting' },
       });
       window.dispatchEvent(event);
     }, 500);
   };
 
-  const handleContactFormToggle = (formType: "message" | "calendar") => {
+  const handleContactFormToggle = (formType: 'message' | 'calendar') => {
     setContactFormType(formType);
   };
 
@@ -897,8 +859,8 @@ export default function ModernHome() {
 
   // Tour functions
   const startTour = () => {
-    console.log("🚀 Starting tour...");
-    console.log("🔥 Firebase DB status:", db ? "Ready" : "Not initialized");
+    console.log('🚀 Starting tour...');
+    console.log('🔥 Firebase DB status:', db ? 'Ready' : 'Not initialized');
 
     setIsActive(true);
     setCurrentStep(0);
@@ -912,11 +874,11 @@ export default function ModernHome() {
     setShowCats(true);
 
     // Track tour start
-    console.log("📊 About to track tour start event...");
-    trackTourEvent("viewed", tourSteps[0].id, 0);
+    console.log('📊 About to track tour start event...');
+    trackTourEvent('viewed', tourSteps[0].id, 0);
 
     // Scroll to top first
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     // Start with first step after a delay
     setTimeout(() => {
       scrollToSection(tourSteps[0].targetSection, 0);
@@ -952,15 +914,15 @@ export default function ModernHome() {
           absoluteElementTop - Math.max(centerOffset, 100);
 
         // Debug step 4 condition before special handling
-        if (sectionId === "timeline" && actualStep === 3) {
-          debugLog("🔍 Checking Step 4 condition", {
+        if (sectionId === 'timeline' && actualStep === 3) {
+          debugLog('🔍 Checking Step 4 condition', {
             sectionId,
             currentStep: actualStep,
-            condition: "timeline && currentStep === 3",
+            condition: 'timeline && currentStep === 3',
             match: true,
           });
-        } else if (sectionId === "timeline") {
-          debugLog("❌ Timeline but wrong step", {
+        } else if (sectionId === 'timeline') {
+          debugLog('❌ Timeline but wrong step', {
             sectionId,
             currentStep: actualStep,
             expectedStep: 3,
@@ -968,31 +930,31 @@ export default function ModernHome() {
         }
 
         // Special handling for specific sections on mobile
-        if (sectionId === "skills" && actualStep === 1) {
+        if (sectionId === 'skills' && actualStep === 1) {
           // Step 2: Skills - scroll to TOP of skills section for proper framing
-          debugLog("🛠️ Step 2: Scrolling to top of skills section");
-          const skillsSection = document.getElementById("skills");
+          debugLog('🛠️ Step 2: Scrolling to top of skills section');
+          const skillsSection = document.getElementById('skills');
           if (skillsSection) {
             const skillsRect = skillsSection.getBoundingClientRect();
             const skillsAbsoluteTop = skillsRect.top + window.pageYOffset;
             // Position at the top of skills section with minimal offset
             const finalPosition = skillsAbsoluteTop - 100;
-            debugLog("🛠️ Step 2: Skills section top positioning", {
+            debugLog('🛠️ Step 2: Skills section top positioning', {
               finalPosition,
               skillsAbsoluteTop,
               offset: -100,
             });
-            window.scrollTo({ top: finalPosition, behavior: "smooth" });
+            window.scrollTo({ top: finalPosition, behavior: 'smooth' });
             return;
           }
           // Fallback positioning - minimal offset
           const finalPosition = absoluteElementTop - 50;
-          debugLog("🛠️ Step 2: Skills fallback positioning", { finalPosition });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          debugLog('🛠️ Step 2: Skills fallback positioning', { finalPosition });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
-        } else if (sectionId === "timeline" && actualStep === 2) {
+        } else if (sectionId === 'timeline' && actualStep === 2) {
           // Step 3: Education step - focus on education section
-          debugLog("🎓 Step 3: Scrolling to education section");
+          debugLog('🎓 Step 3: Scrolling to education section');
 
           // Try multiple selectors to find education items
           let educationItems = document.querySelectorAll(
@@ -1006,7 +968,7 @@ export default function ModernHome() {
             );
           }
 
-          debugLog("🎓 Step 3: Education items found", {
+          debugLog('🎓 Step 3: Education items found', {
             count: educationItems.length,
             firstSelector:
               '[id^="timeline-university"], [id^="timeline-carnegie"], [id^="timeline-spanish"]',
@@ -1018,48 +980,48 @@ export default function ModernHome() {
             const firstItemAbsoluteTop = firstItemRect.top + window.pageYOffset;
             // Position to show the education section with reduced offset
             const finalPosition = firstItemAbsoluteTop - 150;
-            debugLog("🎓 Step 3: Education positioning successful", {
+            debugLog('🎓 Step 3: Education positioning successful', {
               finalPosition,
               firstItemAbsoluteTop,
               offset: -150,
             });
-            window.scrollTo({ top: finalPosition, behavior: "smooth" });
+            window.scrollTo({ top: finalPosition, behavior: 'smooth' });
             return;
           }
 
           // Enhanced fallback - look for education section specifically
           debugLog(
-            "🎓 Step 3: Education items not found, trying timeline section"
+            '🎓 Step 3: Education items not found, trying timeline section'
           );
-          const timelineSection = document.getElementById("timeline");
+          const timelineSection = document.getElementById('timeline');
           if (timelineSection) {
             const timelineRect = timelineSection.getBoundingClientRect();
             const timelineAbsoluteTop = timelineRect.top + window.pageYOffset;
             // Position at the top of timeline (education section) with reduced offset
             const finalPosition = timelineAbsoluteTop - 50;
-            debugLog("🎓 Step 3: Timeline education fallback", {
+            debugLog('🎓 Step 3: Timeline education fallback', {
               finalPosition,
               timelineAbsoluteTop,
               offset: -50,
             });
-            window.scrollTo({ top: finalPosition, behavior: "smooth" });
+            window.scrollTo({ top: finalPosition, behavior: 'smooth' });
             return;
           }
 
           // Final fallback
-          debugLog("🎓 Step 3: Using final fallback positioning");
+          debugLog('🎓 Step 3: Using final fallback positioning');
           const finalPosition = absoluteElementTop - 100;
-          debugLog("🎓 Step 3: Final fallback", { finalPosition });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          debugLog('🎓 Step 3: Final fallback', { finalPosition });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
-        } else if (sectionId === "timeline" && actualStep === 3) {
+        } else if (sectionId === 'timeline' && actualStep === 3) {
           // Work experience step - position below the work experience title on mobile
-          debugLog("✅ STEP 4 CONDITION MET: timeline + actualStep === 3");
-          debugLog("🎯 Mobile Step 4: Positioning below work experience title");
+          debugLog('✅ STEP 4 CONDITION MET: timeline + actualStep === 3');
+          debugLog('🎯 Mobile Step 4: Positioning below work experience title');
 
           // Try to find the work experience title first
           const workExperienceTitle = document.getElementById(
-            "work-experience-title"
+            'work-experience-title'
           );
           if (workExperienceTitle) {
             const workRect = workExperienceTitle.getBoundingClientRect();
@@ -1067,7 +1029,7 @@ export default function ModernHome() {
             // Position below the work experience title but moved up by one card length (170px)
             const finalPosition = workAbsoluteTop + workRect.height + 20 - 170;
             debugLog(
-              "🎯 Mobile Step 4: Work experience title positioning (moved up by one card)",
+              '🎯 Mobile Step 4: Work experience title positioning (moved up by one card)',
               {
                 finalPosition,
                 workAbsoluteTop,
@@ -1076,85 +1038,84 @@ export default function ModernHome() {
                 cardOffset: -170,
               }
             );
-            window.scrollTo({ top: finalPosition, behavior: "smooth" });
+            window.scrollTo({ top: finalPosition, behavior: 'smooth' });
             return;
           }
 
           // Fallback to timeline section if work experience title not found
-          const timelineSection = document.getElementById("timeline");
+          const timelineSection = document.getElementById('timeline');
           if (timelineSection) {
             const timelineRect = timelineSection.getBoundingClientRect();
             const timelineAbsoluteTop = timelineRect.top + window.pageYOffset;
             // Position at the top of timeline with reduced offset
             const finalPosition = timelineAbsoluteTop - 50;
-            debugLog("🎯 Mobile Step 4: Timeline fallback positioning", {
+            debugLog('🎯 Mobile Step 4: Timeline fallback positioning', {
               finalPosition,
               timelineAbsoluteTop,
               offset: -50,
             });
-            window.scrollTo({ top: finalPosition, behavior: "smooth" });
+            window.scrollTo({ top: finalPosition, behavior: 'smooth' });
             return;
           }
 
-          debugLog("🎯 Mobile Step 4: Using final fallback");
+          debugLog('🎯 Mobile Step 4: Using final fallback');
           // Final fallback
           const finalPosition = absoluteElementTop - 100;
-          debugLog("🎯 Mobile Step 4: Final fallback, scrolling to:", {
+          debugLog('🎯 Mobile Step 4: Final fallback, scrolling to:', {
             finalPosition,
             absoluteElementTop,
             offset: -100,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
-        } else if (sectionId === "projects") {
+        } else if (sectionId === 'projects') {
           // Projects step - different handling for step 5 and 6
           if (actualStep === 4) {
-            // Step 5: Expired Solutions project
-            debugLog(
-              "🎯 Mobile Step 5: Scrolling to Expired Solutions project"
-            );
-            const expiredSolutionsProject = document.getElementById(
-              "project-expired-solutions"
-            );
-            if (expiredSolutionsProject) {
-              const projectRect =
-                expiredSolutionsProject.getBoundingClientRect();
+            // Step 5: Sample Project project
+            debugLog('🎯 Mobile Step 5: Scrolling to Sample Project project');
+            const sampleProjectProject =
+              document.getElementById('project-featured-0');
+            if (sampleProjectProject) {
+              const projectRect = sampleProjectProject.getBoundingClientRect();
               const projectAbsoluteTop = projectRect.top + window.pageYOffset;
               const finalPosition = projectAbsoluteTop - 100;
-              debugLog("🎯 Mobile Step 5: Expired Solutions positioning", {
+              debugLog('🎯 Mobile Step 5: Sample Project positioning', {
                 finalPosition,
                 projectAbsoluteTop,
                 offset: -100,
               });
-              window.scrollTo({ top: finalPosition, behavior: "smooth" });
+              window.scrollTo({ top: finalPosition, behavior: 'smooth' });
               return;
             }
           } else if (actualStep === 5) {
-            // Step 6: BBW project
-            debugLog("🎯 Mobile Step 6: Scrolling to BBW project");
-            const bbwProject = document.getElementById("project-bbw");
-            if (bbwProject) {
-              const projectRect = bbwProject.getBoundingClientRect();
+            // Step 6: Example Company project
+            debugLog('🎯 Mobile Step 6: Scrolling to Example Company project');
+            const secondProject = document.getElementById('project-featured-1');
+            if (secondProject) {
+              const projectRect = secondProject.getBoundingClientRect();
               const projectAbsoluteTop = projectRect.top + window.pageYOffset;
               const finalPosition = projectAbsoluteTop - 100;
-              debugLog("🎯 Mobile Step 6: BBW project positioning", {
-                finalPosition,
-                projectAbsoluteTop,
-                offset: -100,
-              });
-              window.scrollTo({ top: finalPosition, behavior: "smooth" });
+              debugLog(
+                '🎯 Mobile Step 6: Example Company project positioning',
+                {
+                  finalPosition,
+                  projectAbsoluteTop,
+                  offset: -100,
+                }
+              );
+              window.scrollTo({ top: finalPosition, behavior: 'smooth' });
               return;
             }
           }
 
           // Fallback: Projects step - center on projects section with reduced offset
-          debugLog("🎯 Mobile Projects: Using fallback positioning");
+          debugLog('🎯 Mobile Projects: Using fallback positioning');
           const finalPosition = absoluteElementTop - 150;
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         } else {
           // Default mobile case
-          debugLog("🔄 Mobile default case", {
+          debugLog('🔄 Mobile default case', {
             sectionId,
             currentStep: actualStep + 1,
           });
@@ -1162,12 +1123,12 @@ export default function ModernHome() {
 
         window.scrollTo({
           top: finalScrollPosition,
-          behavior: "smooth",
+          behavior: 'smooth',
         });
         return;
       } else {
         // Desktop/non-mobile case
-        debugLog("🖥️ Desktop detected", {
+        debugLog('🖥️ Desktop detected', {
           width: window.innerWidth,
           currentStep: actualStep + 1,
           sectionId,
@@ -1176,28 +1137,28 @@ export default function ModernHome() {
 
       // Desktop handling (unchanged)
       // Special handling for Step 2 (skills) - position to TOP of skills section
-      if (sectionId === "skills" && isActive && actualStep === 1) {
-        debugLog("🛠️ Step 2 Desktop: Scrolling to top of skills section");
-        const skillsSection = document.getElementById("skills");
+      if (sectionId === 'skills' && isActive && actualStep === 1) {
+        debugLog('🛠️ Step 2 Desktop: Scrolling to top of skills section');
+        const skillsSection = document.getElementById('skills');
         if (skillsSection) {
           const skillsRect = skillsSection.getBoundingClientRect();
           const skillsAbsoluteTop = skillsRect.top + window.pageYOffset;
           // Position at the TOP of the skills section for desktop
           const finalPosition = skillsAbsoluteTop - 150;
-          debugLog("🛠️ Step 2 Desktop: Skills positioning", {
+          debugLog('🛠️ Step 2 Desktop: Skills positioning', {
             finalPosition,
             skillsAbsoluteTop,
             offset: -150,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         }
       }
 
       // Special handling for Step 3 (education) targeting timeline - go directly to final position
-      if (sectionId === "timeline" && isActive && actualStep === 2) {
+      if (sectionId === 'timeline' && isActive && actualStep === 2) {
         debugLog(
-          "🎓 Step 3 Desktop: Scrolling directly to education final position"
+          '🎓 Step 3 Desktop: Scrolling directly to education final position'
         );
 
         // Try to find specific education items first for most accurate positioning
@@ -1210,80 +1171,80 @@ export default function ModernHome() {
           const firstItemRect = firstEducationItem.getBoundingClientRect();
           const firstItemAbsoluteTop = firstItemRect.top + window.pageYOffset;
           const finalPosition = firstItemAbsoluteTop - 300; // Increased offset to stay higher
-          debugLog("🎓 Step 3 Desktop: Education item positioning", {
+          debugLog('🎓 Step 3 Desktop: Education item positioning', {
             finalPosition,
             firstItemAbsoluteTop,
             offset: -300,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         }
 
         // Fallback to timeline section
-        const timelineSection = document.getElementById("timeline");
+        const timelineSection = document.getElementById('timeline');
         if (timelineSection) {
           const timelineRect = timelineSection.getBoundingClientRect();
           const timelineAbsoluteTop = timelineRect.top + window.pageYOffset;
           const finalPosition = timelineAbsoluteTop - 200; // Increased offset to stay higher
-          debugLog("🎓 Step 3 Desktop: Timeline fallback positioning", {
+          debugLog('🎓 Step 3 Desktop: Timeline fallback positioning', {
             finalPosition,
             timelineAbsoluteTop,
             offset: -200,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         }
       }
 
       // Special handling for step 4 (experience) targeting timeline - go directly to final position
-      if (sectionId === "timeline" && isActive && actualStep === 3) {
+      if (sectionId === 'timeline' && isActive && actualStep === 3) {
         debugLog(
-          "💼 Step 4 Desktop: Scrolling directly to work experience final position"
+          '💼 Step 4 Desktop: Scrolling directly to work experience final position'
         );
 
         // Use same approach as Step 3 for consistency but target work experience area
         const workExperienceTitle = document.getElementById(
-          "work-experience-title"
+          'work-experience-title'
         );
         if (workExperienceTitle) {
           const workRect = workExperienceTitle.getBoundingClientRect();
           const workAbsoluteTop = workRect.top + window.pageYOffset;
           const finalPosition = workAbsoluteTop - 350; // Increased offset to stay higher
-          debugLog("💼 Step 4 Desktop: Work experience title positioning", {
+          debugLog('💼 Step 4 Desktop: Work experience title positioning', {
             finalPosition,
             workAbsoluteTop,
             offset: -350,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         }
 
         // Fallback to same position as education
-        const timelineSection = document.getElementById("timeline");
+        const timelineSection = document.getElementById('timeline');
         if (timelineSection) {
           const timelineRect = timelineSection.getBoundingClientRect();
           const timelineAbsoluteTop = timelineRect.top + window.pageYOffset;
           const finalPosition = timelineAbsoluteTop - 200; // Increased offset to stay higher
-          debugLog("💼 Step 4 Desktop: Timeline fallback positioning", {
+          debugLog('💼 Step 4 Desktop: Timeline fallback positioning', {
             finalPosition,
             timelineAbsoluteTop,
             offset: -200,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         }
       }
 
       // Special handling for projects (steps 5 and 6) - go directly to final position
       if (
-        sectionId === "projects" &&
+        sectionId === 'projects' &&
         isActive &&
         (actualStep === 4 || actualStep === 5)
       ) {
         debugLog(
           `🎯 Step ${actualStep + 1} Desktop: Scrolling directly to projects final position`
         );
-        const projectsSection = document.getElementById("projects");
+        const projectsSection = document.getElementById('projects');
         if (projectsSection) {
           const projectsRect = projectsSection.getBoundingClientRect();
           const projectsAbsoluteTop = projectsRect.top + window.pageYOffset;
@@ -1293,19 +1254,19 @@ export default function ModernHome() {
             projectsAbsoluteTop,
             offset: -100,
           });
-          window.scrollTo({ top: finalPosition, behavior: "smooth" });
+          window.scrollTo({ top: finalPosition, behavior: 'smooth' });
           return;
         }
       }
 
       // Special handling for work-experience-bottom to show all work items
-      if (sectionId === "work-experience-bottom") {
+      if (sectionId === 'work-experience-bottom') {
         const offset = 100; // Desktop offset
         const finalScrollPosition = absoluteElementTop - offset;
 
         window.scrollTo({
           top: finalScrollPosition,
-          behavior: "smooth",
+          behavior: 'smooth',
         });
         return;
       }
@@ -1316,7 +1277,7 @@ export default function ModernHome() {
 
       window.scrollTo({
         top: finalScrollPosition,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   };
@@ -1331,14 +1292,14 @@ export default function ModernHome() {
       if (isMobile) {
         // On mobile, position the specific element in the upper portion of the viewport
         const finalPosition = absoluteElementTop - 100; // Reduced offset
-        window.scrollTo({ top: finalPosition, behavior: "smooth" });
+        window.scrollTo({ top: finalPosition, behavior: 'smooth' });
       } else {
         // Desktop handling with reduced offset
         const offset = 50; // Reduced for better framing
         const finalScrollPosition = absoluteElementTop - offset;
         window.scrollTo({
           top: finalScrollPosition,
-          behavior: "smooth",
+          behavior: 'smooth',
         });
       }
     }
@@ -1347,21 +1308,18 @@ export default function ModernHome() {
   // Helper function to find arrow target elements and calculate positions relative to them
   const getArrowBasedPosition = (
     currentStep: number,
-    side: "left" | "right"
+    side: 'left' | 'right'
   ) => {
     const stepTargets = {
       1: [
-        "skill-product-strategy",
-        "skill-data-analysis",
-        "skill-stakeholder-management",
+        'skill-product-strategy',
+        'skill-data-analysis',
+        'skill-stakeholder-management',
       ], // Step 2: Skills
-      2: [
-        "timeline-carnegie-mellon-university",
-        "timeline-university-of-florida",
-      ], // Step 3: Education
-      3: ["work-experience-title"], // Step 4: Work Experience
-      4: ["project-expired-solutions"], // Step 5: Project 1
-      5: ["project-bbw"], // Step 6: Project 2
+      2: ['timeline', 'timeline'], // Step 3: Education
+      3: ['work-experience-title'], // Step 4: Work Experience
+      4: ['project-featured-0'], // Step 5: Project 1
+      5: ['project-featured-1'], // Step 6: Project 2
     };
 
     const targets = stepTargets[currentStep as keyof typeof stepTargets] || [];
@@ -1377,7 +1335,7 @@ export default function ModernHome() {
 
     let left, top;
 
-    if (side === "right") {
+    if (side === 'right') {
       // Position to the right of the target element
       left = rect.right + arrowOffset;
       // If too close to right edge, move left
@@ -1398,7 +1356,7 @@ export default function ModernHome() {
     if (top < 24) top = 24;
     if (top + 300 > window.innerHeight) top = window.innerHeight - 324;
 
-    return { top: `${top}px`, left: `${left}px`, right: "auto" };
+    return { top: `${top}px`, left: `${left}px`, right: 'auto' };
   };
 
   const getPopupPosition = (position: string, isPaused: boolean = false) => {
@@ -1416,16 +1374,16 @@ export default function ModernHome() {
         return {
           top: `${scrollTop + viewportHeight / 2}px`,
           left: `${scrollLeft + viewportWidth / 2}px`,
-          transform: "translate(-50%, -50%)",
-          right: "auto",
+          transform: 'translate(-50%, -50%)',
+          right: 'auto',
         };
       } else {
         // When active on mobile, use fixed positioning (relative to viewport)
         return {
-          top: "50vh",
-          left: "50vw",
-          transform: "translate(-50%, -50%)",
-          right: "auto",
+          top: '50vh',
+          left: '50vw',
+          transform: 'translate(-50%, -50%)',
+          right: 'auto',
         };
       }
     }
@@ -1438,22 +1396,22 @@ export default function ModernHome() {
 
       // Add scroll offset to make positions stick to page content, not screen
       const adjustPosition = (pos: any) => {
-        if (pos.top && typeof pos.top === "string" && pos.top.includes("px")) {
+        if (pos.top && typeof pos.top === 'string' && pos.top.includes('px')) {
           const topValue = parseInt(pos.top);
           pos.top = `${topValue + scrollTop}px`;
         }
         if (
           pos.left &&
-          typeof pos.left === "string" &&
-          pos.left.includes("px")
+          typeof pos.left === 'string' &&
+          pos.left.includes('px')
         ) {
           const leftValue = parseInt(pos.left);
           pos.left = `${leftValue + scrollLeft}px`;
         }
         if (
           pos.right &&
-          typeof pos.right === "string" &&
-          pos.right.includes("px")
+          typeof pos.right === 'string' &&
+          pos.right.includes('px')
         ) {
           const rightValue = parseInt(pos.right);
           pos.right = `${rightValue + scrollLeft}px`;
@@ -1467,128 +1425,128 @@ export default function ModernHome() {
 
     switch (position) {
       // New dynamic positions based on arrow locations
-      case "skills-title-left":
+      case 'skills-title-left':
         // Step 2: Position near skills title on the left
-        const skillsSection = document.getElementById("skills");
+        const skillsSection = document.getElementById('skills');
         if (skillsSection) {
           const rect = skillsSection.getBoundingClientRect();
           basePosition = {
             top: `${rect.top + 150}px`,
-            left: "24px",
-            right: "auto",
+            left: '24px',
+            right: 'auto',
           };
         } else {
-          basePosition = { top: "400px", left: "24px", right: "auto" };
+          basePosition = { top: '400px', left: '24px', right: 'auto' };
         }
         break;
 
-      case "education-right-of-arrows":
+      case 'education-right-of-arrows':
         // Step 3: Position to the right of education arrows
-        const educationPos = getArrowBasedPosition(2, "right");
+        const educationPos = getArrowBasedPosition(2, 'right');
         basePosition = educationPos || {
-          top: "400px",
-          right: "24px",
-          left: "auto",
+          top: '400px',
+          right: '24px',
+          left: 'auto',
         };
         break;
 
-      case "work-experience-left-of-arrows":
+      case 'work-experience-left-of-arrows':
         // Step 4: Position to the left of work experience arrows
-        const workExperiencePos = getArrowBasedPosition(3, "left");
+        const workExperiencePos = getArrowBasedPosition(3, 'left');
         basePosition = workExperiencePos || {
-          top: "500px",
-          left: "24px",
-          right: "auto",
+          top: '500px',
+          left: '24px',
+          right: 'auto',
         };
         break;
 
-      case "project-next-to-arrows":
+      case 'project-next-to-arrows':
         // Step 5: Position next to project arrows (right side for first project)
-        const project1Pos = getArrowBasedPosition(4, "right");
+        const project1Pos = getArrowBasedPosition(4, 'right');
         basePosition = project1Pos || {
-          bottom: "200px",
-          right: "24px",
-          left: "auto",
+          bottom: '200px',
+          right: '24px',
+          left: 'auto',
         };
         break;
 
-      case "project-next-to-arrows-2":
+      case 'project-next-to-arrows-2':
         // Step 6: Position next to project arrows (left side for second project)
-        const project2Pos = getArrowBasedPosition(5, "left");
+        const project2Pos = getArrowBasedPosition(5, 'left');
         basePosition = project2Pos || {
-          bottom: "80px",
-          left: "24px",
-          right: "auto",
+          bottom: '80px',
+          left: '24px',
+          right: 'auto',
         };
         break;
 
       // Keep existing static positions for backward compatibility
-      case "top-left":
+      case 'top-left':
         // For Step 2 (Skills), position at very top-left of skills section without covering content
         if (currentStep === 1) {
-          const skillsSection = document.getElementById("skills");
+          const skillsSection = document.getElementById('skills');
           if (skillsSection) {
             const rect = skillsSection.getBoundingClientRect();
             // Position above the skills content, not overlapping with "Product Strategy"
             basePosition = {
               top: `${rect.top - 20}px`, // Position above the skills section
-              left: "24px",
-              right: "auto",
+              left: '24px',
+              right: 'auto',
             };
           } else {
-            basePosition = { top: "80px", left: "24px", right: "auto" };
+            basePosition = { top: '80px', left: '24px', right: 'auto' };
           }
         } else {
-          basePosition = { top: "80px", left: "24px", right: "auto" };
+          basePosition = { top: '80px', left: '24px', right: 'auto' };
         }
         break;
-      case "top-right":
-        basePosition = { top: "80px", right: "24px", left: "auto" };
+      case 'top-right':
+        basePosition = { top: '80px', right: '24px', left: 'auto' };
         break;
-      case "bottom-left":
-        basePosition = { bottom: "80px", left: "24px", right: "auto" };
+      case 'bottom-left':
+        basePosition = { bottom: '80px', left: '24px', right: 'auto' };
         break;
-      case "bottom-right":
-        basePosition = { bottom: "80px", right: "24px", left: "auto" };
+      case 'bottom-right':
+        basePosition = { bottom: '80px', right: '24px', left: 'auto' };
         break;
-      case "bottom-center":
+      case 'bottom-center':
         basePosition = {
-          bottom: "80px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          right: "auto",
+          bottom: '80px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          right: 'auto',
         };
         break;
-      case "center":
+      case 'center':
         basePosition = {
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          right: "auto",
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          right: 'auto',
         };
         break;
-      case "work-experience-top":
+      case 'work-experience-top':
         basePosition = {
-          top: "300px",
-          right: "24px",
-          left: "auto",
+          top: '300px',
+          right: '24px',
+          left: 'auto',
         };
         break;
-      case "education-left":
+      case 'education-left':
         basePosition = {
-          top: "400px",
-          left: "24px",
-          right: "auto",
+          top: '400px',
+          left: '24px',
+          right: 'auto',
         };
         break;
-      case "bottom-right-lower":
-        basePosition = { bottom: "20px", right: "24px", left: "auto" };
+      case 'bottom-right-lower':
+        basePosition = { bottom: '20px', right: '24px', left: 'auto' };
         break;
-      case "education-below":
-        basePosition = { top: "450px", right: "24px", left: "auto" };
+      case 'education-below':
+        basePosition = { top: '450px', right: '24px', left: 'auto' };
         break;
       default:
-        basePosition = { top: "80px", right: "24px", left: "auto" };
+        basePosition = { top: '80px', right: '24px', left: 'auto' };
         break;
     }
 
@@ -1601,24 +1559,24 @@ export default function ModernHome() {
 
       if (
         adjustedPosition.top &&
-        typeof adjustedPosition.top === "string" &&
-        adjustedPosition.top.includes("px")
+        typeof adjustedPosition.top === 'string' &&
+        adjustedPosition.top.includes('px')
       ) {
         const topValue = parseInt(adjustedPosition.top);
         adjustedPosition.top = `${topValue + scrollTop}px`;
       }
       if (
         adjustedPosition.left &&
-        typeof adjustedPosition.left === "string" &&
-        adjustedPosition.left.includes("px")
+        typeof adjustedPosition.left === 'string' &&
+        adjustedPosition.left.includes('px')
       ) {
         const leftValue = parseInt(adjustedPosition.left);
         adjustedPosition.left = `${leftValue + scrollLeft}px`;
       }
       if (
         adjustedPosition.right &&
-        typeof adjustedPosition.right === "string" &&
-        adjustedPosition.right.includes("px")
+        typeof adjustedPosition.right === 'string' &&
+        adjustedPosition.right.includes('px')
       ) {
         const rightValue = parseInt(adjustedPosition.right);
         adjustedPosition.right = `${rightValue + scrollLeft}px`;
@@ -1641,13 +1599,13 @@ export default function ModernHome() {
 
       // Track button click
       trackTourEvent(
-        "clicked",
+        'clicked',
         `next-button-step-${currentStep + 1}`,
         currentStep
       );
 
       // Track tour step progression
-      trackTourEvent("viewed", tourSteps[nextStepIndex].id, nextStepIndex);
+      trackTourEvent('viewed', tourSteps[nextStepIndex].id, nextStepIndex);
 
       // Debug logging for step advancement
       debugLog(`🔄 Advancing to Step ${nextStepIndex + 1}`, {
@@ -1665,7 +1623,7 @@ export default function ModernHome() {
       // Note: Testimonials section removed from template
 
       // Track tour completion
-      trackTourEvent("completed", "final", tourSteps.length);
+      trackTourEvent('completed', 'final', tourSteps.length);
 
       setIsActive(false);
       // Show final CTA after scroll completes
@@ -1689,13 +1647,13 @@ export default function ModernHome() {
 
       // Track button click
       trackTourEvent(
-        "clicked",
+        'clicked',
         `prev-button-step-${currentStep + 1}`,
         currentStep
       );
 
       // Track going back to previous step
-      trackTourEvent("viewed", tourSteps[prevStepIndex].id, prevStepIndex);
+      trackTourEvent('viewed', tourSteps[prevStepIndex].id, prevStepIndex);
 
       // All steps use consistent scrollToSection logic
       scrollToSection(tourSteps[prevStepIndex].targetSection, prevStepIndex);
@@ -1705,7 +1663,7 @@ export default function ModernHome() {
   const closeTour = () => {
     // Track tour abandonment if not at the end
     if (currentStep < tourSteps.length - 1) {
-      trackTourEvent("skipped", tourSteps[currentStep].id, currentStep);
+      trackTourEvent('skipped', tourSteps[currentStep].id, currentStep);
     }
 
     setIsActive(false);
@@ -1718,8 +1676,8 @@ export default function ModernHome() {
     setShowCats(false);
 
     // Ensure scrolling is restored
-    document.body.style.overflow = "unset";
-    document.documentElement.style.overflow = "unset";
+    document.body.style.overflow = 'unset';
+    document.documentElement.style.overflow = 'unset';
   };
 
   const [showTourPopup, setShowTourPopup] = useState(true);
@@ -1729,8 +1687,8 @@ export default function ModernHome() {
     setIsPaused(!isPaused);
 
     trackTourEvent(
-      "clicked",
-      wasPaused ? "resume-button" : "pause-button",
+      'clicked',
+      wasPaused ? 'resume-button' : 'pause-button',
       currentStep
     );
 
@@ -1744,15 +1702,15 @@ export default function ModernHome() {
     }
   };
 
-  const handleFinalCTAAction = (action: "message" | "meeting") => {
+  const handleFinalCTAAction = (action: 'message' | 'meeting') => {
     // Track CTA action
-    trackTourEvent("tour_cta_action", "final_cta", tourSteps.length, action);
+    trackTourEvent('tour_cta_action', 'final_cta', tourSteps.length, action);
 
     // Close tour (this will also turn off cats)
     closeTour();
 
     // Trigger the appropriate action immediately since we're already at testimonials
-    if (action === "message") {
+    if (action === 'message') {
       handleSendMessage();
     } else {
       handleScheduleMeeting();
@@ -1762,7 +1720,7 @@ export default function ModernHome() {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
   };
 
@@ -1782,7 +1740,7 @@ export default function ModernHome() {
       // Wait 1 second before starting the highlighting animation
       const initialDelay = setTimeout(() => {
         const currentStepData = tourSteps[currentStep];
-        const characters = currentStepData.content.split("");
+        const characters = currentStepData.content.split('');
         const totalCharacters = characters.length;
         const highlightDuration = currentStepData.duration - 4000; // Reserve 4 seconds (1s initial + 3s pause)
         const intervalTime = 50; // 50ms per character for smooth letter-by-letter highlighting
@@ -1834,15 +1792,15 @@ export default function ModernHome() {
 
     const preventKeyboardScroll = (e: KeyboardEvent) => {
       const scrollKeys = [
-        "ArrowUp",
-        "ArrowDown",
-        "ArrowLeft",
-        "ArrowRight",
-        "PageUp",
-        "PageDown",
-        "Home",
-        "End",
-        "Space",
+        'ArrowUp',
+        'ArrowDown',
+        'ArrowLeft',
+        'ArrowRight',
+        'PageUp',
+        'PageDown',
+        'Home',
+        'End',
+        'Space',
       ];
       if (scrollKeys.includes(e.key) && e.isTrusted) {
         e.preventDefault();
@@ -1853,47 +1811,47 @@ export default function ModernHome() {
 
     if (shouldLockScroll) {
       // CSS overflow prevention for visual effect
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
 
       // Event listener prevention for user scroll only (not programmatic)
-      document.addEventListener("wheel", preventUserScroll, { passive: false });
-      document.addEventListener("touchmove", preventUserScroll, {
+      document.addEventListener('wheel', preventUserScroll, { passive: false });
+      document.addEventListener('touchmove', preventUserScroll, {
         passive: false,
       });
-      document.addEventListener("keydown", preventKeyboardScroll, {
+      document.addEventListener('keydown', preventKeyboardScroll, {
         passive: false,
       });
 
       // Prevent scrolling on window
-      window.addEventListener("wheel", preventUserScroll, { passive: false });
-      window.addEventListener("touchmove", preventUserScroll, {
+      window.addEventListener('wheel', preventUserScroll, { passive: false });
+      window.addEventListener('touchmove', preventUserScroll, {
         passive: false,
       });
     } else {
       // Allow scrolling when tour is inactive, paused, or when user pauses any step
-      document.body.style.overflow = "unset";
-      document.documentElement.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = 'unset';
 
       // Remove event listeners
-      document.removeEventListener("wheel", preventUserScroll);
-      document.removeEventListener("touchmove", preventUserScroll);
-      document.removeEventListener("keydown", preventKeyboardScroll);
-      window.removeEventListener("wheel", preventUserScroll);
-      window.removeEventListener("touchmove", preventUserScroll);
+      document.removeEventListener('wheel', preventUserScroll);
+      document.removeEventListener('touchmove', preventUserScroll);
+      document.removeEventListener('keydown', preventKeyboardScroll);
+      window.removeEventListener('wheel', preventUserScroll);
+      window.removeEventListener('touchmove', preventUserScroll);
     }
 
     // Cleanup function to ensure scrolling is restored
     return () => {
-      document.body.style.overflow = "unset";
-      document.documentElement.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
+      document.documentElement.style.overflow = 'unset';
 
       // Remove all event listeners
-      document.removeEventListener("wheel", preventUserScroll);
-      document.removeEventListener("touchmove", preventUserScroll);
-      document.removeEventListener("keydown", preventKeyboardScroll);
-      window.removeEventListener("wheel", preventUserScroll);
-      window.removeEventListener("touchmove", preventUserScroll);
+      document.removeEventListener('wheel', preventUserScroll);
+      document.removeEventListener('touchmove', preventUserScroll);
+      document.removeEventListener('keydown', preventKeyboardScroll);
+      window.removeEventListener('wheel', preventUserScroll);
+      window.removeEventListener('touchmove', preventUserScroll);
     };
   }, [isActive, isPaused]);
 
@@ -1940,11 +1898,11 @@ export default function ModernHome() {
   }, [isActive, tourInvitationDismissed, showFinalCTA, showTourInvitation]);
 
   const handleTourInvitationAccept = () => {
-    console.log("🎯 Tour invitation accepted! Starting tour...");
+    console.log('🎯 Tour invitation accepted! Starting tour...');
     setShowTourInvitation(false);
     setTourInvitationDismissed(true);
     // Track click on "Take Tour" button
-    trackTourEvent("clicked", "tour-invitation-accept", 0);
+    trackTourEvent('clicked', 'tour-invitation-accept', 0);
     startTour(); // This will automatically turn on cats via startTour function
   };
 
@@ -1952,7 +1910,7 @@ export default function ModernHome() {
     setShowTourInvitation(false);
     setTourInvitationDismissed(true);
     // Track invitation dismissal
-    trackTourEvent("clicked", "tour-invitation-dismiss", 0);
+    trackTourEvent('clicked', 'tour-invitation-dismiss', 0);
   };
 
   return (
@@ -2018,7 +1976,7 @@ export default function ModernHome() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
             className="fixed inset-0 flex items-center justify-center z-40 p-4"
           >
             {/* Backdrop */}
@@ -2063,7 +2021,7 @@ export default function ModernHome() {
                           Let me show you
                         </div>
                         <div className="text-lg font-bold text-yellow-300">
-                          4+ Years Of Achievements
+                          {siteConfig.tour.invitation}
                         </div>
                         <div className="inline-block bg-white/20 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/30">
                           <span className="text-sm font-bold">In 1 Minute</span>
@@ -2094,21 +2052,21 @@ export default function ModernHome() {
             initial={{ opacity: 0, scale: 0.8, y: 50 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: -50 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className={`${isPaused ? "absolute" : "fixed"} z-50 max-w-xs md:max-w-md will-change-transform`}
+            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+            className={`${isPaused ? 'absolute' : 'fixed'} z-50 max-w-xs md:max-w-md will-change-transform`}
             style={{
               ...getPopupPosition(tourSteps[currentStep].position, isPaused),
-              willChange: "transform, opacity",
-              backfaceVisibility: "hidden",
-              perspective: "1000px",
+              willChange: 'transform, opacity',
+              backfaceVisibility: 'hidden',
+              perspective: '1000px',
             }}
             onClick={togglePause}
           >
             <div
-              className={`bg-gradient-to-br ${tourSteps[currentStep].color} p-1 rounded-2xl shadow-2xl cursor-pointer ${isPaused ? "backdrop-blur-sm" : ""}`}
+              className={`bg-gradient-to-br ${tourSteps[currentStep].color} p-1 rounded-2xl shadow-2xl cursor-pointer ${isPaused ? 'backdrop-blur-sm' : ''}`}
             >
               <div
-                className={`bg-white dark:bg-gray-900 rounded-xl p-3 md:p-6 relative transition-all duration-300 ${isPaused ? "backdrop-blur-md bg-white/90 dark:bg-gray-900/90" : ""}`}
+                className={`bg-white dark:bg-gray-900 rounded-xl p-3 md:p-6 relative transition-all duration-300 ${isPaused ? 'backdrop-blur-md bg-white/90 dark:bg-gray-900/90' : ''}`}
               >
                 <button
                   onClick={(e) => {
@@ -2145,7 +2103,7 @@ export default function ModernHome() {
                   >
                     <FiChevronLeft className="w-3 h-3" />
                     <span className="text-xs">
-                      {currentStep === 0 ? "Restart" : "Back"}
+                      {currentStep === 0 ? 'Restart' : 'Back'}
                     </span>
                   </motion.button>
                   <span className="text-xs text-gray-500 px-2">
@@ -2173,7 +2131,7 @@ export default function ModernHome() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   className="hidden md:block absolute top-1/2 -left-4 -translate-y-1/2 p-3 bg-gradient-to-r from-gray-500 to-gray-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-10"
-                  title={currentStep === 0 ? "Restart tour" : "Previous step"}
+                  title={currentStep === 0 ? 'Restart tour' : 'Previous step'}
                 >
                   <FiChevronLeft className="w-4 h-4" />
                 </motion.button>
@@ -2221,8 +2179,8 @@ export default function ModernHome() {
                           key={highlight}
                           className={`px-1.5 py-0.5 md:px-3 md:py-1 text-xs font-semibold rounded-full bg-gradient-to-r ${tourSteps[currentStep].color} text-white ${
                             highlightedIndex === index
-                              ? "opacity-100"
-                              : "opacity-70"
+                              ? 'opacity-100'
+                              : 'opacity-70'
                           }`}
                         >
                           {highlight}
@@ -2242,23 +2200,23 @@ export default function ModernHome() {
                           index === currentStep
                             ? `bg-gradient-to-r ${tourSteps[currentStep].color} scale-110`
                             : index < currentStep
-                              ? "bg-green-500"
-                              : "bg-gray-300 opacity-30"
+                              ? 'bg-green-500'
+                              : 'bg-gray-300 opacity-30'
                         }`}
                       />
                     ))}
                   </div>
                   <span className="text-xs text-gray-500">
-                    Step {currentStep + 1} of {tourSteps.length} •{" "}
+                    Step {currentStep + 1} of {tourSteps.length} •{' '}
                     <span className="hidden md:inline">
                       {isPaused
-                        ? "Tap card to resume tour"
-                        : "Tap card to pause & scroll freely"}
+                        ? 'Tap card to resume tour'
+                        : 'Tap card to pause & scroll freely'}
                     </span>
                     <span className="md:hidden">
                       {isPaused
-                        ? "Tap anywhere to resume"
-                        : "Tap to pause & scroll"}
+                        ? 'Tap anywhere to resume'
+                        : 'Tap to pause & scroll'}
                     </span>
                   </span>
                 </div>
@@ -2291,20 +2249,17 @@ export default function ModernHome() {
                   <span className="text-xl md:text-2xl">🎯</span>
                 </div>
                 <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2 md:mb-3">
-                  That's the PM Experience
+                  Thanks for exploring
                 </h2>
                 <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
-                  You just experienced how I approach product challenges:
-                  structured storytelling, data-driven insights, and
-                  customer-focused solutions. Ready to discuss how this applies
-                  to your team?
+                  {siteConfig.tour.closing}
                 </p>
               </div>
 
               <div className="flex flex-col gap-2 md:gap-3 mb-3 md:mb-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                   <motion.button
-                    onClick={() => handleFinalCTAAction("message")}
+                    onClick={() => handleFinalCTAAction('message')}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex items-center justify-center gap-2 px-4 py-3 md:py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg md:rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px]"
@@ -2313,7 +2268,7 @@ export default function ModernHome() {
                     <span className="text-sm md:text-base">Send Message</span>
                   </motion.button>
                   <motion.button
-                    onClick={() => handleFinalCTAAction("meeting")}
+                    onClick={() => handleFinalCTAAction('meeting')}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex items-center justify-center gap-2 px-4 py-3 md:py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg md:rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-200 min-h-[48px]"
@@ -2329,10 +2284,10 @@ export default function ModernHome() {
                   onClick={() => {
                     // Track restart action
                     trackTourEvent(
-                      "tour_cta_action",
-                      "final_cta",
+                      'tour_cta_action',
+                      'final_cta',
                       tourSteps.length,
-                      "restart"
+                      'restart'
                     );
                     startTour();
                   }}

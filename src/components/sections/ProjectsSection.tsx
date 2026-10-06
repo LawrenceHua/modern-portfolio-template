@@ -1,12 +1,13 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { ExternalLink, Github, Star, Award } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ExternalLink, Github, Star, Award } from 'lucide-react';
 
 interface Project {
   title: string;
@@ -15,224 +16,12 @@ interface Project {
   tags: string[];
   link: string;
   linkText: string;
-  linkIcon: "external" | "github";
+  linkIcon: 'external' | 'github';
   featured?: boolean;
   achievements?: string[];
 }
 
-const projectsData = {
-  all: [
-    {
-      title: "Product Launch Strategy",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Product Management", "Strategy", "Launch", "Market Research"],
-      link: "#",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-      featured: true,
-      achievements: [
-        "Improved user engagement",
-        "Data-driven decisions",
-        "Cross-functional leadership",
-        "Market success",
-      ],
-    },
-    {
-      title: "User Experience Redesign",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["UX Design", "Product Management", "User Research", "Design"],
-      link: "#",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Business Process Optimization",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: [
-        "Process Improvement",
-        "Automation",
-        "Business Analysis",
-        "Efficiency",
-      ],
-      link: "#",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Analytics Dashboard",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: [
-        "Analytics",
-        "Dashboard",
-        "Data Visualization",
-        "Business Intelligence",
-      ],
-      link: "#",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-      featured: true,
-      achievements: [
-        "Improved decision making",
-        "Real-time insights",
-        "User-friendly interface",
-        "Cross-department adoption",
-      ],
-    },
-    {
-      title: "Mobile App Development",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Mobile", "App Development", "Product Management", "Launch"],
-      link: "#",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Market Analysis Report",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Market Research", "Analysis", "Strategy", "Data Science"],
-      link: "#",
-      linkText: "View Report",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Team Leadership Project",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Leadership", "Team Management", "Project Management", "Strategy"],
-      link: "#",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Customer Research Study",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Research", "Customer Insights", "User Research", "Analysis"],
-      link: "#",
-      linkText: "View Study",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Product Strategy Framework",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Strategy", "Framework", "Product Management", "Planning"],
-      link: "#",
-      linkText: "View Framework",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Data Analysis Project",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Data Analysis", "Analytics", "Insights", "Reporting"],
-      link: "#",
-      linkText: "View Analysis",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Feature Development",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: [
-        "Feature Development",
-        "Product Management",
-        "Development",
-        "Launch",
-      ],
-      link: "#",
-      linkText: "View Feature",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Competitive Analysis",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Competitive Analysis", "Market Research", "Strategy", "Research"],
-      link: "#",
-      linkText: "View Analysis",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "User Journey Mapping",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["User Journey", "UX Design", "Mapping", "User Research"],
-      link: "#",
-      linkText: "View Journey",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Product Roadmap",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Roadmap", "Product Planning", "Strategy", "Timeline"],
-      link: "#",
-      linkText: "View Roadmap",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Portfolio Website",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Next.js", "React", "TailwindCSS", "TypeScript"],
-      link: "https://github.com/LawrenceHua/LawrenceHua.io",
-      linkText: "View Source",
-      linkIcon: "github" as const,
-    },
-    {
-      title: "Market Research Analysis",
-      description:
-        "Conducted comprehensive market research for a new product launch, analyzing competitor landscape and identifying market opportunities that informed strategic decisions.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Market Research", "Competitive Analysis", "Strategy", "Business"],
-      link: "https://example.com",
-      linkText: "View Analysis",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "User Experience Optimization",
-      description:
-        "Led user experience improvements for a web application, resulting in 40% increase in user satisfaction scores and reduced support tickets by 30%.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["UX Design", "User Research", "Web Application", "Optimization"],
-      link: "https://example.com",
-      linkText: "View Project",
-      linkIcon: "external" as const,
-    },
-    {
-      title: "Product Strategy Development",
-      description:
-        "Developed comprehensive product strategy for a new market segment, including roadmap planning, feature prioritization, and go-to-market strategy.",
-      image: "/images/logos/pm_happy_hour_logo.jpeg",
-      tags: ["Product Strategy", "Roadmap", "Go-to-Market", "Planning"],
-      link: "https://example.com",
-      linkText: "View Strategy",
-      linkIcon: "external" as const,
-    },
-  ],
-};
+const projectsData = siteConfig.projectsData;
 
 const getDynamicCategories = () => {
   const featuredProjects = projectsData.all.filter((p) => p.featured);
@@ -243,12 +32,12 @@ const getDynamicCategories = () => {
     regularProjects.filter((p) =>
       p.tags.some((tag) =>
         [
-          "AI",
-          "AI/ML",
-          "Machine Learning",
-          "ML Pipeline",
-          "LLM",
-          "Computer Vision",
+          'AI',
+          'AI/ML',
+          'Machine Learning',
+          'ML Pipeline',
+          'LLM',
+          'Computer Vision',
         ].includes(tag)
       )
     ).length;
@@ -257,7 +46,7 @@ const getDynamicCategories = () => {
     featuredProjects.length +
     regularProjects.filter((p) =>
       p.tags.some((tag) =>
-        ["Product Management", "A/B Testing", "Strategy", "UI/UX"].includes(tag)
+        ['Product Management', 'A/B Testing', 'Strategy', 'UI/UX'].includes(tag)
       )
     ).length;
 
@@ -266,28 +55,28 @@ const getDynamicCategories = () => {
     regularProjects.filter((p) =>
       p.tags.some((tag) =>
         [
-          "Android",
-          "Next.js",
-          "React",
-          "Database",
-          "REST API",
-          "Python",
-          "TypeScript",
+          'Android',
+          'Next.js',
+          'React',
+          'Database',
+          'REST API',
+          'Python',
+          'TypeScript',
         ].includes(tag)
       )
     ).length;
 
   return [
-    { key: "all", label: "All Projects", count: projectsData.all.length },
-    { key: "product", label: "Product", count: productCount },
-    { key: "ai", label: "AI/ML", count: aiCount },
-    { key: "engineering", label: "Engineering", count: engineeringCount },
+    { key: 'all', label: 'All Projects', count: projectsData.all.length },
+    { key: 'product', label: 'Product', count: productCount },
+    { key: 'ai', label: 'AI/ML', count: aiCount },
+    { key: 'engineering', label: 'Engineering', count: engineeringCount },
   ];
 };
 
 export function ProjectsSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile device
@@ -297,11 +86,11 @@ export function ProjectsSection() {
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState('all');
   const [showAll, setShowAll] = useState(false);
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(
     new Set()
@@ -315,38 +104,38 @@ export function ProjectsSection() {
 
     let filteredRegular = regularProjects;
 
-    if (activeCategory === "ai") {
+    if (activeCategory === 'ai') {
       filteredRegular = regularProjects.filter((p) =>
         p.tags.some((tag) =>
           [
-            "AI",
-            "AI/ML",
-            "Machine Learning",
-            "ML Pipeline",
-            "LLM",
-            "Computer Vision",
+            'AI',
+            'AI/ML',
+            'Machine Learning',
+            'ML Pipeline',
+            'LLM',
+            'Computer Vision',
           ].includes(tag)
         )
       );
-    } else if (activeCategory === "product") {
+    } else if (activeCategory === 'product') {
       filteredRegular = regularProjects.filter((p) =>
         p.tags.some((tag) =>
-          ["Product Management", "A/B Testing", "Strategy", "UI/UX"].includes(
+          ['Product Management', 'A/B Testing', 'Strategy', 'UI/UX'].includes(
             tag
           )
         )
       );
-    } else if (activeCategory === "engineering") {
+    } else if (activeCategory === 'engineering') {
       filteredRegular = regularProjects.filter((p) =>
         p.tags.some((tag) =>
           [
-            "Android",
-            "Next.js",
-            "React",
-            "Database",
-            "REST API",
-            "Python",
-            "TypeScript",
+            'Android',
+            'Next.js',
+            'React',
+            'Database',
+            'REST API',
+            'Python',
+            'TypeScript',
           ].includes(tag)
         )
       );
@@ -383,7 +172,7 @@ export function ProjectsSection() {
       y: 0,
       transition: {
         duration: isMobile ? 0 : 0.6,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
@@ -395,7 +184,7 @@ export function ProjectsSection() {
       scale: 1,
       transition: {
         duration: isMobile ? 0 : 0.4,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
@@ -415,7 +204,7 @@ export function ProjectsSection() {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={isInView ? 'visible' : 'hidden'}
         className="relative z-10 mx-auto max-w-7xl px-6"
       >
         {/* Section Header */}
@@ -423,7 +212,7 @@ export function ProjectsSection() {
           <div className="flex items-center justify-center space-x-2 mb-4">
             <Star className="h-8 w-8 text-gray-400 fill-current" />
             <h2 className="text-4xl font-bold text-black dark:text-white sm:text-5xl">
-              Featured{" "}
+              Featured{' '}
               <span className="bg-gradient-to-r from-gray-400 to-gray-600 bg-clip-text text-transparent">
                 Projects
               </span>
@@ -431,16 +220,16 @@ export function ProjectsSection() {
             <Star className="h-8 w-8 text-gray-400 fill-current" />
           </div>
           <p className="mx-auto max-w-3xl text-lg text-gray-600 dark:text-gray-300">
-            Spotlight on my two favorite projects that showcase{" "}
+            Spotlight on my two favorite projects that showcase{' '}
             <span className="font-semibold text-gray-700 dark:text-gray-200">
               innovation
             </span>
             ,
             <span className="font-semibold text-gray-700 dark:text-gray-200">
-              {" "}
+              {' '}
               product leadership
             </span>
-            , and{" "}
+            , and{' '}
             <span className="font-semibold text-gray-700 dark:text-gray-200">
               real-world impact
             </span>
@@ -455,16 +244,12 @@ export function ProjectsSection() {
               {featuredProjects.map((project, index) => {
                 const projectId = `project-${project.title
                   .toLowerCase()
-                  .split(" ")[0]
-                  .replace(/[^a-z0-9-]/g, "")}`;
+                  .split(' ')[0]
+                  .replace(/[^a-z0-9-]/g, '')}`;
                 return (
                   <motion.div
                     key={project.title}
-                    id={
-                      project.title.includes("Expired Solutions")
-                        ? "project-expired-solutions"
-                        : projectId
-                    }
+                    id={`project-featured-${index}`}
                     variants={cardVariants}
                     className="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-black shadow-2xl transition-all duration-500 hover:shadow-3xl hover:shadow-gray-500/10 hover:-translate-y-3"
                   >
@@ -494,7 +279,7 @@ export function ProjectsSection() {
                         className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                       >
                         <div className="flex items-center space-x-2 rounded-full bg-white/90 dark:bg-black/90 px-6 py-3 text-sm font-bold text-black dark:text-white backdrop-blur-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                          {project.linkIcon === "github" ? (
+                          {project.linkIcon === 'github' ? (
                             <Github className="h-5 w-5" />
                           ) : (
                             <ExternalLink className="h-5 w-5" />
@@ -511,7 +296,7 @@ export function ProjectsSection() {
                       </h3>
 
                       <p
-                        className={`mb-6 text-gray-600 dark:text-gray-300 leading-relaxed ${expandedDescriptions.has(project.title) ? "whitespace-normal" : "line-clamp-3"}`}
+                        className={`mb-6 text-gray-600 dark:text-gray-300 leading-relaxed ${expandedDescriptions.has(project.title) ? 'whitespace-normal' : 'line-clamp-3'}`}
                         onClick={() => {
                           setExpandedDescriptions((prev) => {
                             const next = new Set(prev);
@@ -567,7 +352,7 @@ export function ProjectsSection() {
                         className="inline-flex items-center space-x-2 rounded-xl bg-gradient-to-r from-gray-400 to-gray-600 px-6 py-3 text-sm font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-gray-500/25 hover:scale-105"
                       >
                         <span>{project.linkText}</span>
-                        {project.linkIcon === "github" ? (
+                        {project.linkIcon === 'github' ? (
                           <Github className="h-4 w-4" />
                         ) : (
                           <ExternalLink className="h-4 w-4" />
@@ -593,20 +378,20 @@ export function ProjectsSection() {
             <p className="mx-auto max-w-3xl text-lg text-gray-600 dark:text-gray-300 text-center mb-8">
               <span className="font-semibold text-gray-700 dark:text-gray-200">
                 Solutions
-              </span>{" "}
-              and{" "}
+              </span>{' '}
+              and{' '}
               <span className="font-semibold text-gray-700 dark:text-gray-200">
                 product innovations
-              </span>{" "}
-              spanning{" "}
+              </span>{' '}
+              spanning{' '}
               <span className="font-medium text-gray-700 dark:text-gray-300">
                 machine learning
               </span>
-              ,{" "}
+              ,{' '}
               <span className="font-medium text-gray-700 dark:text-gray-300">
                 enterprise tools
               </span>
-              , and{" "}
+              , and{' '}
               <span className="font-medium text-gray-700 dark:text-gray-300">
                 scalable platforms
               </span>
@@ -622,8 +407,8 @@ export function ProjectsSection() {
                   whileTap={{ scale: 0.95 }}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border backdrop-blur-sm ${
                     activeCategory === category.key
-                      ? "bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20"
-                      : "bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      ? 'bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20'
+                      : 'bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                   }`}
                 >
                   {category.label} ({category.count})
@@ -663,7 +448,7 @@ export function ProjectsSection() {
                   className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                 >
                   <div className="flex items-center space-x-2 rounded-full bg-white/90 dark:bg-gray-900/90 px-4 py-2 text-sm font-medium text-gray-900 dark:text-gray-100 backdrop-blur-sm">
-                    {project.linkIcon === "github" ? (
+                    {project.linkIcon === 'github' ? (
                       <Github className="h-4 w-4" />
                     ) : (
                       <ExternalLink className="h-4 w-4" />
@@ -679,7 +464,7 @@ export function ProjectsSection() {
                   {project.title}
                 </h3>
                 <p
-                  className={`mb-4 text-sm text-gray-600 dark:text-gray-300 transition-all cursor-pointer ${expandedDescriptions.has(project.title) ? "whitespace-normal" : "line-clamp-3"}`}
+                  className={`mb-4 text-sm text-gray-600 dark:text-gray-300 transition-all cursor-pointer ${expandedDescriptions.has(project.title) ? 'whitespace-normal' : 'line-clamp-3'}`}
                   onClick={() => {
                     setExpandedDescriptions((prev) => {
                       const next = new Set(prev);
@@ -720,7 +505,7 @@ export function ProjectsSection() {
                   className="inline-flex items-center space-x-1 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 >
                   <span>{project.linkText}</span>
-                  {project.linkIcon === "github" ? (
+                  {project.linkIcon === 'github' ? (
                     <Github className="h-4 w-4" />
                   ) : (
                     <ExternalLink className="h-4 w-4" />
@@ -741,7 +526,7 @@ export function ProjectsSection() {
               className="rounded-xl bg-gradient-to-r from-gray-600 to-gray-700 px-8 py-4 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-gray-500/25"
             >
               Show {remainingCount} More Project
-              {remainingCount !== 1 ? "s" : ""}
+              {remainingCount !== 1 ? 's' : ''}
             </motion.button>
           </motion.div>
         )}
@@ -756,7 +541,7 @@ export function ProjectsSection() {
               className="rounded-xl bg-gradient-to-r from-gray-600 to-gray-700 px-8 py-4 text-white font-semibold shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-gray-500/25"
             >
               Show {allProjectsForDisplay.length - 4} Less Project
-              {allProjectsForDisplay.length - 4 !== 1 ? "s" : ""}
+              {allProjectsForDisplay.length - 4 !== 1 ? 's' : ''}
             </motion.button>
           </motion.div>
         )}

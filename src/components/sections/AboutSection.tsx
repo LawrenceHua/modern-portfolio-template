@@ -1,14 +1,15 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
 
 export function AboutSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile device
@@ -18,8 +19,8 @@ export function AboutSection() {
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const containerVariants = {
@@ -40,7 +41,7 @@ export function AboutSection() {
       y: 0,
       transition: {
         duration: isMobile ? 0 : 0.8,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
@@ -60,13 +61,16 @@ export function AboutSection() {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={isInView ? 'visible' : 'hidden'}
         className="relative z-10 mx-auto max-w-6xl px-6"
       >
         {/* Section Header */}
         <motion.div variants={itemVariants} className="mb-16 text-center">
           <h2 className="mb-6 text-4xl font-bold text-black dark:text-white sm:text-5xl">
-            About <span className="text-black dark:text-white">YOUR_NAME</span>
+            {siteConfig.aboutCopy.copy0}
+            <span className="text-black dark:text-white">
+              {siteConfig.name}
+            </span>
           </h2>
           <div className="mx-auto h-1 w-24 bg-black dark:bg-white rounded-full" />
         </motion.div>
@@ -77,37 +81,19 @@ export function AboutSection() {
           <motion.div variants={itemVariants}>
             <div className="rounded-2xl bg-gray-50 dark:bg-gray-900 p-8 shadow-xl">
               <h3 className="mb-6 text-2xl font-bold text-black dark:text-white text-center">
-                My Journey in Product Management
+                {siteConfig.about.title}
               </h3>
 
               <div className="space-y-4 text-gray-700 dark:text-gray-300 max-w-4xl mx-auto">
                 <p className="text-lg leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
+                  {siteConfig.about.paragraphs[0]}
                 </p>
 
-                <p>
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse
-                  cillum dolore eu fugiat nulla pariatur. Excepteur sint
-                  occaecat cupidatat non proident, sunt in culpa qui officia
-                  deserunt mollit anim id est laborum.
-                </p>
+                <p>{siteConfig.about.paragraphs[1]}</p>
 
-                <p>
-                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                  accusantium doloremque laudantium, totam rem aperiam, eaque
-                  ipsa quae ab illo inventore veritatis et quasi architecto
-                  beatae vitae dicta sunt explicabo.
-                </p>
+                <p>{siteConfig.about.paragraphs[2]}</p>
 
-                <p>
-                  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-                  odit aut fugit, sed quia consequuntur magni dolores eos qui
-                  ratione voluptatem sequi nesciunt. Neque porro quisquam est,
-                  qui dolorem ipsum quia dolor sit amet.
-                </p>
+                <p>{siteConfig.about.paragraphs[3]}</p>
               </div>
 
               {/* Icon Formula */}
@@ -130,7 +116,7 @@ export function AboutSection() {
                       </div>
                     </div>
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                      Product Strategy
+                      {siteConfig.aboutCopy.copy1}
                     </span>
                   </motion.div>
 
@@ -150,7 +136,7 @@ export function AboutSection() {
                       </div>
                     </div>
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                      User Research
+                      {siteConfig.aboutCopy.copy2}
                     </span>
                   </motion.div>
 
@@ -170,7 +156,7 @@ export function AboutSection() {
                       </div>
                     </div>
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                      Data Analysis
+                      {siteConfig.aboutCopy.copy3}
                     </span>
                   </motion.div>
 
@@ -190,7 +176,7 @@ export function AboutSection() {
                       </div>
                     </div>
                     <span className="text-sm font-bold text-gray-600 dark:text-gray-400 whitespace-nowrap">
-                      Successful Product Manager
+                      {siteConfig.title}
                     </span>
                   </motion.div>
                 </div>
@@ -215,21 +201,21 @@ export function AboutSection() {
                     <div>
                       <h4 className="font-semibold text-black dark:text-white">
                         <span className="text-black dark:text-white">
-                          Technical Foundation
+                          {siteConfig.aboutCopy.copy4}
                         </span>
                       </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Hands-on experience with{" "}
+                        Hands-on experience with{' '}
                         <span className="font-medium text-gray-600 dark:text-gray-400">
-                          ML models
+                          {siteConfig.aboutCopy.copy5}
                         </span>
-                        ,{" "}
+                        ,{' '}
                         <span className="font-medium text-gray-600 dark:text-gray-400">
-                          computer vision
+                          {siteConfig.aboutCopy.copy6}
                         </span>
                         , and
                         <span className="font-medium text-gray-600 dark:text-gray-400">
-                          {" "}
+                          {' '}
                           AI integrations
                         </span>
                       </p>
@@ -243,14 +229,19 @@ export function AboutSection() {
                     <div>
                       <h4 className="font-semibold text-black dark:text-white">
                         <span className="text-black dark:text-white">
-                          Product Strategy
+                          {siteConfig.aboutCopy.copy7}
                         </span>
                       </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        From{" "}
-                        <span className="font-medium">roadmap planning</span> to{" "}
-                        <span className="font-medium">A/B testing</span>,
-                        driving{" "}
+                        From{' '}
+                        <span className="font-medium">
+                          {siteConfig.aboutCopy.copy8}
+                        </span>{' '}
+                        to{' '}
+                        <span className="font-medium">
+                          {siteConfig.aboutCopy.copy9}
+                        </span>
+                        , driving{' '}
                         <span className="font-bold text-gray-600 dark:text-gray-400">
                           20%+ adoption improvements
                         </span>
@@ -265,21 +256,21 @@ export function AboutSection() {
                     <div>
                       <h4 className="font-semibold text-black dark:text-white">
                         <span className="text-black dark:text-white">
-                          Cross-functional Leadership
+                          {siteConfig.aboutCopy.copy10}
                         </span>
                       </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Leading{" "}
+                        Leading{' '}
                         <span className="font-medium text-gray-600 dark:text-gray-400">
-                          engineering teams
+                          {siteConfig.aboutCopy.copy11}
                         </span>
-                        , managing{" "}
+                        , managing{' '}
                         <span className="font-medium text-gray-600 dark:text-gray-400">
-                          stakeholders
+                          {siteConfig.aboutCopy.copy12}
                         </span>
-                        , and driving{" "}
+                        , and driving{' '}
                         <span className="font-medium text-gray-600 dark:text-gray-400">
-                          consensus
+                          {siteConfig.aboutCopy.copy13}
                         </span>
                       </p>
                     </div>
@@ -299,25 +290,25 @@ export function AboutSection() {
                   <div className="text-center">
                     <div className="mb-2 text-2xl">🎯</div>
                     <div className="text-sm font-semibold text-black dark:text-white">
-                      User-Centric
+                      {siteConfig.aboutCopy.copy14}
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="mb-2 text-2xl">🚀</div>
                     <div className="text-sm font-semibold text-black dark:text-white">
-                      Innovation
+                      {siteConfig.aboutCopy.copy15}
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="mb-2 text-2xl">📊</div>
                     <div className="text-sm font-semibold text-black dark:text-white">
-                      Data-Driven
+                      {siteConfig.aboutCopy.copy16}
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="mb-2 text-2xl">🤝</div>
                     <div className="text-sm font-semibold text-black dark:text-white">
-                      Collaborative
+                      {siteConfig.aboutCopy.copy17}
                     </div>
                   </div>
                 </div>
@@ -329,35 +320,10 @@ export function AboutSection() {
           <motion.div variants={itemVariants}>
             <div className="rounded-2xl bg-gray-50 dark:bg-gray-900 p-8 shadow-xl">
               <h3 className="mb-6 text-2xl font-bold text-black dark:text-white text-center">
-                Beyond the Resume
+                {siteConfig.aboutCopy.copy18}
               </h3>
               <p className="text-lg text-gray-600 dark:text-gray-300 max-w-4xl mx-auto text-center leading-relaxed">
-                When I'm not building products, you'll find me{" "}
-                <span className="font-medium text-gray-600 dark:text-gray-400">
-                  exploring the latest technology research
-                </span>
-                ,{" "}
-                <span className="font-medium text-gray-600 dark:text-gray-400">
-                  mentoring fellow product managers
-                </span>
-                , or working on{" "}
-                <span className="font-medium text-gray-600 dark:text-gray-400">
-                  side projects that bridge technology and social impact
-                </span>
-                . I believe the best products come from{" "}
-                <span className="font-semibold text-gray-600 dark:text-gray-400">
-                  curiosity
-                </span>
-                ,
-                <span className="font-semibold text-gray-600 dark:text-gray-400">
-                  {" "}
-                  empathy
-                </span>
-                , and a{" "}
-                <span className="font-semibold text-gray-600 dark:text-gray-400">
-                  relentless focus on making things better
-                </span>
-                .
+                {siteConfig.about.paragraphs[3]}
               </p>
             </div>
           </motion.div>
@@ -366,11 +332,11 @@ export function AboutSection() {
         {/* CTA */}
         <motion.div variants={itemVariants} className="mt-16 text-center">
           <p className="mb-6 text-lg text-gray-600 dark:text-gray-300">
-            Ready to build the next solution together?
+            {siteConfig.aboutCopy.copy24}
           </p>
           <motion.button
             onClick={() => {
-              const skillsSection = document.getElementById("skills");
+              const skillsSection = document.getElementById('skills');
               if (skillsSection) {
                 const elementPosition =
                   skillsSection.getBoundingClientRect().top;
@@ -378,7 +344,7 @@ export function AboutSection() {
                   elementPosition + window.pageYOffset - 120;
                 window.scrollTo({
                   top: offsetPosition,
-                  behavior: "smooth",
+                  behavior: 'smooth',
                 });
               }
             }}
@@ -386,7 +352,7 @@ export function AboutSection() {
             whileTap={{ scale: 0.95 }}
             className="rounded-xl bg-black dark:bg-white text-white dark:text-black px-8 py-4 font-semibold shadow-lg transition-all duration-300 hover:shadow-xl"
           >
-            Explore My Skills
+            {siteConfig.aboutCopy.copy25}
           </motion.button>
         </motion.div>
       </motion.div>

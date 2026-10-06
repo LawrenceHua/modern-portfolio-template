@@ -1,10 +1,11 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiMessageCircle, FiX } from "react-icons/fi";
-import { ChatInterface } from "./ChatInterface";
-import { trackButtonClick } from "../../lib/analytics";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiMessageCircle, FiX } from 'react-icons/fi';
+import { ChatInterface } from './ChatInterface';
+import { trackButtonClick } from '../../lib/analytics';
 
 interface FloatingChatbotProps {
   isExternallyOpen?: boolean;
@@ -26,17 +27,17 @@ export default function FloatingChatbot({
       // Mark as clicked since it was opened externally
       if (!hasBeenClicked) {
         setHasBeenClicked(true);
-        localStorage.setItem("chatbot-clicked", "true");
+        localStorage.setItem('chatbot-clicked', 'true');
       }
       // Track external opening
-      trackButtonClick("chatbot", "opened_from_tour");
+      trackButtonClick('chatbot', 'opened_from_tour');
     }
   }, [isExternallyOpen, isOpen, hasBeenClicked, isMobile]);
 
   // Check if chatbot has been clicked before on component mount
   useEffect(() => {
-    const chatbotClicked = localStorage.getItem("chatbot-clicked");
-    if (chatbotClicked === "true") {
+    const chatbotClicked = localStorage.getItem('chatbot-clicked');
+    if (chatbotClicked === 'true') {
       setHasBeenClicked(true);
     }
   }, []);
@@ -48,9 +49,9 @@ export default function FloatingChatbot({
     };
 
     checkIfMobile();
-    window.addEventListener("resize", checkIfMobile);
+    window.addEventListener('resize', checkIfMobile);
 
-    return () => window.removeEventListener("resize", checkIfMobile);
+    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   const handleToggle = () => {
@@ -60,11 +61,11 @@ export default function FloatingChatbot({
     // Mark as clicked for the first time and store in localStorage
     if (!hasBeenClicked) {
       setHasBeenClicked(true);
-      localStorage.setItem("chatbot-clicked", "true");
+      localStorage.setItem('chatbot-clicked', 'true');
     }
 
     // Track chatbot open/close
-    trackButtonClick("chatbot", newState ? "opened" : "closed");
+    trackButtonClick('chatbot', newState ? 'opened' : 'closed');
   };
 
   const handleClose = () => {
@@ -75,7 +76,7 @@ export default function FloatingChatbot({
     }
 
     // Track chatbot close
-    trackButtonClick("chatbot", "closed_manually");
+    trackButtonClick('chatbot', 'closed_manually');
   };
 
   return (
@@ -90,7 +91,7 @@ export default function FloatingChatbot({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{
-              type: "spring",
+              type: 'spring',
               stiffness: 300,
               damping: 30,
             }}
@@ -123,7 +124,7 @@ export default function FloatingChatbot({
             {/* Tooltip */}
             <div className="absolute bottom-full right-0 mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               <div className="bg-slate-900 text-white text-sm font-medium px-3 py-2 rounded-lg shadow-lg whitespace-nowrap">
-                💬 Chat with YOUR_NAME's AI
+                💬 Chat with {siteConfig.name}'s AI
                 <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-900" />
               </div>
             </div>

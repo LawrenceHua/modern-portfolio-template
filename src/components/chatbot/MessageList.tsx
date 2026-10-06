@@ -1,7 +1,8 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiUser,
   FiCpu,
@@ -9,10 +10,10 @@ import {
   FiFile,
   FiMessageCircle,
   FiHeart,
-} from "react-icons/fi";
-import type { Message } from "../../types/chatbot";
-import { formatMessage } from "../../lib/messageFormatter";
-import styles from "./Chatbot.module.css";
+} from 'react-icons/fi';
+import type { Message } from '../../types/chatbot';
+import { formatMessage } from '../../lib/messageFormatter';
+import styles from './Chatbot.module.css';
 
 interface MessageListProps {
   messages: Message[];
@@ -24,8 +25,8 @@ interface MessageListProps {
 }
 
 function getFileIcon(file: { type: string; name: string }) {
-  if (file.type.startsWith("image/")) return <FiImage className="h-4 w-4" />;
-  if (file.type.includes("pdf")) return <FiFile className="h-4 w-4" />;
+  if (file.type.startsWith('image/')) return <FiImage className="h-4 w-4" />;
+  if (file.type.includes('pdf')) return <FiFile className="h-4 w-4" />;
   return <FiFile className="h-4 w-4" />;
 }
 
@@ -37,7 +38,7 @@ export function MessageList({
   isMobile,
   isLoveMode = false,
 }: MessageListProps) {
-  const lastUserMessage = messages.filter((m) => m.role === "user").pop();
+  const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-3">
@@ -45,22 +46,22 @@ export function MessageList({
         <motion.div
           key={index}
           initial={
-            message.role === "user"
+            message.role === 'user'
               ? { opacity: 1, y: 0 }
               : { opacity: 0, y: 10 }
           }
           animate={{ opacity: 1, y: 0 }}
           transition={
-            message.role === "user"
+            message.role === 'user'
               ? { duration: 0 }
               : {
                   duration: 0.3,
                   delay: index * 0.05,
-                  ease: "easeOut",
+                  ease: 'easeOut',
                 }
           }
           className={`flex ${
-            message.role === "user" ? "justify-end" : "justify-start"
+            message.role === 'user' ? 'justify-end' : 'justify-start'
           } mb-3`}
         >
           <div
@@ -69,14 +70,14 @@ export function MessageList({
             {/* Avatar */}
             <div
               className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
-                message.role === "user"
-                  ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white"
+                message.role === 'user'
+                  ? 'bg-gradient-to-br from-blue-500 to-purple-600 text-white'
                   : isLoveMode
-                    ? "bg-gradient-to-br from-pink-400 to-pink-600 text-white"
-                    : "bg-gradient-to-br from-purple-500 to-blue-600 text-white"
+                    ? 'bg-gradient-to-br from-pink-400 to-pink-600 text-white'
+                    : 'bg-gradient-to-br from-purple-500 to-blue-600 text-white'
               }`}
             >
-              {message.role === "user" ? (
+              {message.role === 'user' ? (
                 <FiUser className="w-3 h-3" />
               ) : (
                 <FiCpu className="w-3 h-3" />
@@ -89,32 +90,32 @@ export function MessageList({
               <div className="mb-1">
                 <span
                   className={`text-xs font-semibold ${
-                    message.role === "user"
-                      ? "text-white/90"
+                    message.role === 'user'
+                      ? 'text-white/90'
                       : isLoveMode
-                        ? "text-pink-600 dark:text-pink-400"
-                        : "text-purple-600 dark:text-purple-400"
+                        ? 'text-pink-600 dark:text-pink-400'
+                        : 'text-purple-600 dark:text-purple-400'
                   }`}
                 >
-                  {message.role === "user"
-                    ? "You"
+                  {message.role === 'user'
+                    ? 'You'
                     : isLoveMode
-                      ? "YOUR_NAME's Love Bot 💕"
-                      : "YOUR_NAME's AI"}
+                      ? `${siteConfig.name}'s Love Bot 💕`
+                      : `${siteConfig.name}'s AI`}
                 </span>
               </div>
 
               {/* Message Text */}
               <div
                 className={`text-sm leading-normal ${
-                  message.role === "user"
-                    ? "text-white"
-                    : "text-slate-700 dark:text-slate-200"
+                  message.role === 'user'
+                    ? 'text-white'
+                    : 'text-slate-700 dark:text-slate-200'
                 }`}
                 dangerouslySetInnerHTML={{
                   __html:
-                    message.content.includes("<ul style=") ||
-                    message.content.includes("<li style=")
+                    message.content.includes('<ul style=') ||
+                    message.content.includes('<li style=')
                       ? message.content // Already formatted on backend
                       : formatMessage(message.content, isLoveMode), // Format on frontend
                 }}
@@ -127,25 +128,25 @@ export function MessageList({
                     <div
                       key={fileIndex}
                       className={`flex items-center gap-2 p-2 rounded-lg border ${
-                        message.role === "user"
-                          ? "bg-white/10 border-white/20"
-                          : "bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700"
+                        message.role === 'user'
+                          ? 'bg-white/10 border-white/20'
+                          : 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'
                       }`}
                     >
                       <div
                         className={`${
-                          message.role === "user"
-                            ? "text-white/80"
-                            : "text-slate-500 dark:text-slate-400"
+                          message.role === 'user'
+                            ? 'text-white/80'
+                            : 'text-slate-500 dark:text-slate-400'
                         }`}
                       >
                         {getFileIcon(file)}
                       </div>
                       <span
                         className={`text-xs font-medium truncate ${
-                          message.role === "user"
-                            ? "text-white/90"
-                            : "text-slate-600 dark:text-slate-300"
+                          message.role === 'user'
+                            ? 'text-white/90'
+                            : 'text-slate-600 dark:text-slate-300'
                         }`}
                       >
                         {file.name}
@@ -158,14 +159,14 @@ export function MessageList({
               {/* Timestamp */}
               <div
                 className={`text-xs mt-1 ${
-                  message.role === "user"
-                    ? "text-white/70"
-                    : "text-slate-400 dark:text-slate-500"
+                  message.role === 'user'
+                    ? 'text-white/70'
+                    : 'text-slate-400 dark:text-slate-500'
                 }`}
               >
                 {message.timestamp?.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
               </div>
             </div>
@@ -179,7 +180,7 @@ export function MessageList({
           const lastMessage = messages[messages.length - 1];
           const hasRecentLoadingMessage =
             lastMessage &&
-            lastMessage.role === "assistant" &&
+            lastMessage.role === 'assistant' &&
             lastMessage.timestamp &&
             Date.now() - lastMessage.timestamp.getTime() < 2000; // Within last 2 seconds
           return !hasRecentLoadingMessage;
@@ -196,8 +197,8 @@ export function MessageList({
               <div
                 className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
                   isLoveMode
-                    ? "bg-gradient-to-br from-pink-400 to-pink-600 text-white"
-                    : "bg-gradient-to-br from-purple-500 to-blue-600 text-white"
+                    ? 'bg-gradient-to-br from-pink-400 to-pink-600 text-white'
+                    : 'bg-gradient-to-br from-purple-500 to-blue-600 text-white'
                 }`}
               >
                 <FiCpu className="w-3 h-3" />
@@ -209,11 +210,13 @@ export function MessageList({
                   <span
                     className={`text-xs font-semibold ${
                       isLoveMode
-                        ? "text-pink-600 dark:text-pink-400"
-                        : "text-purple-600 dark:text-purple-400"
+                        ? 'text-pink-600 dark:text-pink-400'
+                        : 'text-purple-600 dark:text-purple-400'
                     }`}
                   >
-                    {isLoveMode ? "YOUR_NAME's Love Bot 💕" : "YOUR_NAME's AI"}
+                    {isLoveMode
+                      ? `${siteConfig.name}'s Love Bot 💕`
+                      : `${siteConfig.name}'s AI`}
                   </span>
                 </div>
 
@@ -225,17 +228,17 @@ export function MessageList({
                       <div
                         key={i}
                         className={`w-1.5 h-1.5 rounded-full ${
-                          isLoveMode ? "bg-pink-400" : "bg-purple-400"
+                          isLoveMode ? 'bg-pink-400' : 'bg-purple-400'
                         } animate-pulse`}
                         style={{
                           animationDelay: `${i * 0.2}s`,
-                          animationDuration: "1s",
+                          animationDuration: '1s',
                         }}
                       />
                     ))}
                   </div>
                   <span className="text-sm text-slate-600 dark:text-slate-300">
-                    {getLoadingMessage("Thinking...")}
+                    {getLoadingMessage('Thinking...')}
                   </span>
                 </div>
               </div>

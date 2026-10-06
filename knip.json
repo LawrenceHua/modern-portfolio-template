@@ -1,11 +1,4 @@
 {
-  "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "entry": ["src/app/page.tsx"],
-  "project": ["**/*.{ts,tsx,js,jsx}"],
-  "ignoreDependencies": [
-    "@types/jest",
-    "@types/node",
-    "jest",
-    "jest-environment-jsdom"
-  ]
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "project": ["**/*.{ts,tsx,js,jsx,css}"]
 }
