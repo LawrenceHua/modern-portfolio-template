@@ -1,9 +1,10 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, AlertCircle, Moon, Sun } from "lucide-react";
-import { ThemeProvider, useTheme } from "../providers/ThemeProvider";
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, AlertCircle, Moon, Sun } from 'lucide-react';
+import { ThemeProvider, useTheme } from '../providers/ThemeProvider';
 
 interface NavigationProps {
   sections?: Array<{ id: string; label: string; href: string }>;
@@ -11,12 +12,12 @@ interface NavigationProps {
 }
 
 const defaultSections = [
-  { id: "hero", label: "Home", href: "#hero" },
-  { id: "about", label: "About", href: "#about" },
-  { id: "skills", label: "Skills", href: "#skills" },
-  { id: "timeline", label: "Timeline", href: "#timeline" },
-  { id: "projects", label: "Projects", href: "#projects" },
-  { id: "contact", label: "Contact", href: "#contact" },
+  { id: 'hero', label: 'Home', href: '#hero' },
+  { id: 'about', label: 'About', href: '#about' },
+  { id: 'skills', label: 'Skills', href: '#skills' },
+  { id: 'timeline', label: 'Timeline', href: '#timeline' },
+  { id: 'projects', label: 'Projects', href: '#projects' },
+  { id: 'contact', label: 'Contact', href: '#contact' },
 ];
 
 export function ModernNavigation({
@@ -25,7 +26,7 @@ export function ModernNavigation({
 }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("hero");
+  const [activeSection, setActiveSection] = useState('hero');
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function ModernNavigation({
       }));
 
       // Find the section that's currently most visible in the viewport
-      let currentSection = "hero"; // default
+      let currentSection = 'hero'; // default
       let maxVisibility = 0;
 
       sectionElements.forEach(({ id, element }) => {
@@ -68,26 +69,26 @@ export function ModernNavigation({
       setActiveSection(currentSection);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
     handleScroll(); // Initial check
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [sections]);
 
   const scrollToSection = (href: string) => {
-    const targetId = href.replace("#", "");
+    const targetId = href.replace('#', '');
     const targetElement = document.getElementById(targetId);
 
     if (targetElement) {
       // Calculate the position with offset for fixed header and to show the title
       const elementPosition = targetElement.getBoundingClientRect().top;
       // Use larger offset for Projects section to ensure proper visibility
-      const offset = targetId === "projects" ? 140 : 120;
+      const offset = targetId === 'projects' ? 140 : 120;
       const offsetPosition = elementPosition + window.pageYOffset - offset;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
 
@@ -98,11 +99,11 @@ export function ModernNavigation({
     <motion.header
       initial={tourActive ? false : { y: -100 }}
       animate={tourActive ? false : { y: 0 }}
-      transition={tourActive ? {} : { duration: 0.6, ease: "easeOut" }}
+      transition={tourActive ? {} : { duration: 0.6, ease: 'easeOut' }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/90 dark:bg-black/90 backdrop-blur-md shadow-lg"
-          : "bg-transparent"
+          ? 'bg-white/90 dark:bg-black/90 backdrop-blur-md shadow-lg'
+          : 'bg-transparent'
       }`}
     >
       <nav className="mx-auto max-w-7xl px-6">
@@ -115,10 +116,10 @@ export function ModernNavigation({
             className="flex flex-col items-start"
           >
             <button
-              onClick={() => scrollToSection("#hero")}
+              onClick={() => scrollToSection('#hero')}
               className="text-xl font-bold text-black dark:text-white hover:text-gray-600 dark:hover:text-gray-400 transition-colors duration-200"
             >
-              YOUR_NAME
+              {siteConfig.name}
               <span className="text-gray-700 dark:text-gray-400">.</span>
             </button>
 
@@ -132,7 +133,7 @@ export function ModernNavigation({
               <button
                 className="flex items-center space-x-1 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 px-1.5 py-0.5 text-white shadow-md backdrop-blur-md cursor-pointer hover:scale-105 transition-transform duration-200 text-[10px]"
                 onClick={() => {
-                  const contactSection = document.getElementById("contact");
+                  const contactSection = document.getElementById('contact');
                   if (contactSection) {
                     const elementPosition =
                       contactSection.getBoundingClientRect().top;
@@ -140,7 +141,7 @@ export function ModernNavigation({
                       elementPosition + window.pageYOffset - 120;
                     window.scrollTo({
                       top: offsetPosition,
-                      behavior: "smooth",
+                      behavior: 'smooth',
                     });
                   }
                 }}
@@ -173,8 +174,8 @@ export function ModernNavigation({
                   onClick={() => scrollToSection(section.href)}
                   className={`relative px-2 py-1 text-xs font-medium transition-colors duration-200 rounded-md ${
                     activeSection === section.id
-                      ? "text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30"
-                      : "text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                      ? 'text-gray-700 dark:text-gray-400 bg-gray-100 dark:bg-gray-900/30'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                   }`}
                 >
                   {section.label}
@@ -191,7 +192,7 @@ export function ModernNavigation({
               className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 transition-all duration-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-110"
               aria-label="Toggle theme"
             >
-              {theme === "dark" ? (
+              {theme === 'dark' ? (
                 <Sun className="h-5 w-5 text-gray-400" />
               ) : (
                 <Moon className="h-5 w-5" />
@@ -239,9 +240,9 @@ export function ModernNavigation({
           {isMobileMenuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
+              animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
               className="overflow-hidden lg:hidden"
             >
               <div className="space-y-2 bg-white/95 dark:bg-black/95 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 px-4 py-6 rounded-b-2xl shadow-lg">
@@ -254,7 +255,7 @@ export function ModernNavigation({
                   <button
                     className="flex items-center space-x-2 rounded-full bg-gradient-to-r from-gray-400 to-gray-600 px-3 py-2 text-white shadow-md backdrop-blur-md cursor-pointer hover:scale-105 transition-transform duration-200 text-sm"
                     onClick={() => {
-                      const contactSection = document.getElementById("contact");
+                      const contactSection = document.getElementById('contact');
                       if (contactSection) {
                         const elementPosition =
                           contactSection.getBoundingClientRect().top;
@@ -262,7 +263,7 @@ export function ModernNavigation({
                           elementPosition + window.pageYOffset - 120;
                         window.scrollTo({
                           top: offsetPosition,
-                          behavior: "smooth",
+                          behavior: 'smooth',
                         });
                       }
                       setIsMobileMenuOpen(false);
@@ -286,8 +287,8 @@ export function ModernNavigation({
                     onClick={() => scrollToSection(section.href)}
                     className={`block w-full text-left px-4 py-3 rounded-lg text-base font-medium transition-all duration-200 ${
                       activeSection === section.id
-                        ? "bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                        ? 'bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-400'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50'
                     }`}
                   >
                     {section.label}

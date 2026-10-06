@@ -195,7 +195,7 @@ section {
 }
 
 .skill-item::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: -100%;
@@ -223,7 +223,7 @@ section {
 
 /* Sparkle animation */
 .skill-item::after {
-  content: "✨";
+  content: '✨';
   position: absolute;
   top: -8px;
   right: -8px;
@@ -269,17 +269,17 @@ section {
   animation: bubble-float 2.1s ease-in-out infinite 0.6s;
 }
 
-.skill-item[data-level="expert"] {
+.skill-item[data-level='expert'] {
   background: rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.6);
 }
 
-.skill-item[data-level="proficient"] {
+.skill-item[data-level='proficient'] {
   background: rgba(255, 255, 255, 0.1);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-.skill-item[data-level="familiar"] {
+.skill-item[data-level='familiar'] {
   background: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.2);
 }
@@ -327,7 +327,7 @@ section {
 }
 
 .section-container::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -452,7 +452,7 @@ section {
 }
 
 .timeline-connector-horizontal::before {
-  content: "";
+  content: '';
   position: absolute;
   top: -1px;
   right: -1px;
@@ -1407,7 +1407,7 @@ section {
 
 .timeline-card.expanded::after,
 .education-card.improved-ui.expanded::after {
-  content: "▼";
+  content: '▼';
   position: absolute;
   bottom: 8px;
   right: 12px;
@@ -1868,18 +1868,18 @@ section {
 /* --- New styles for dynamic tooltip colors --- */
 
 /* Expert (Green) */
-.skill-item[data-level="expert"] ~ .skill-tooltip {
+.skill-item[data-level='expert'] ~ .skill-tooltip {
   border-color: rgba(16, 185, 129, 0.5);
 }
-.skill-item[data-level="expert"] ~ .skill-tooltip .skill-tooltip-title {
+.skill-item[data-level='expert'] ~ .skill-tooltip .skill-tooltip-title {
   color: #10b981;
 }
 
 /* Proficient (Orange/Yellow) */
-.skill-item[data-level="proficient"] ~ .skill-tooltip {
+.skill-item[data-level='proficient'] ~ .skill-tooltip {
   border-color: rgba(245, 158, 11, 0.5);
 }
-.skill-item[data-level="proficient"] ~ .skill-tooltip .skill-tooltip-title {
+.skill-item[data-level='proficient'] ~ .skill-tooltip .skill-tooltip-title {
   color: #f59e0b;
 }
 
@@ -1888,7 +1888,7 @@ section {
 /* --- End of new styles --- */
 
 .skill-item::before {
-  content: "";
+  content: '';
   position: absolute;
   top: 0;
   left: -100%;

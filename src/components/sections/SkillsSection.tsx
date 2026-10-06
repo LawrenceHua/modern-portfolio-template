@@ -1,337 +1,31 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React, { useState, useEffect } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
+import React, { useState, useEffect } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
 
-interface Skill {
-  name: string;
-  level: "expert" | "proficient" | "familiar";
-  category: "business" | "data" | "engineering" | "design";
-  icon: string;
-  experience: string;
-  projects: number;
-  achievement: string;
-  endorsements: string[];
-}
-
-const skillsData: Record<string, Skill[]> = {
-  business: [
-    {
-      name: "Product Strategy",
-      level: "expert",
-      category: "business",
-      icon: "🎯",
-      experience: "3+ years",
-      projects: 8,
-      achievement:
-        "Led product strategy initiatives that improved user engagement by 25%",
-      endorsements: [
-        "Senior Product Manager",
-        "Company Leadership",
-        "University Faculty",
-      ],
-    },
-    {
-      name: "Roadmap Planning",
-      level: "expert",
-      category: "business",
-      icon: "📋",
-      experience: "3+ years",
-      projects: 6,
-      achievement: "Planned roadmaps for multiple products and features",
-      endorsements: [
-        "Product Team",
-        "Company Advisors",
-        "Industry Consultants",
-      ],
-    },
-    {
-      name: "A/B Testing",
-      level: "proficient",
-      category: "business",
-      icon: "⚡",
-      experience: "2+ years",
-      projects: 5,
-      achievement: "Improved UI usability by 40% through systematic testing",
-      endorsements: ["Design Team", "University Researchers"],
-    },
-    {
-      name: "User Research",
-      level: "proficient",
-      category: "business",
-      icon: "🔍",
-      experience: "2+ years",
-      projects: 4,
-      achievement: "Conducted 250+ user surveys validating product-market fit",
-      endorsements: ["Company Executives", "Competition Judges"],
-    },
-    {
-      name: "Agile/Scrum",
-      level: "expert",
-      category: "business",
-      icon: "🔄",
-      experience: "3+ years",
-      projects: 7,
-      achievement: "Led agile teams reducing development delays by 25%",
-      endorsements: ["Engineering Teams", "Project Leads"],
-    },
-    {
-      name: "Stakeholder Management",
-      level: "expert",
-      category: "business",
-      icon: "🤝",
-      experience: "3+ years",
-      projects: 8,
-      achievement: "Pitched to 15+ executives securing partnerships",
-      endorsements: [
-        "Company C-Suite",
-        "Industry Partners",
-        "University Leadership",
-      ],
-    },
-  ],
-  data: [
-    {
-      name: "Data Analysis",
-      level: "expert",
-      category: "data",
-      icon: "📊",
-      experience: "3+ years",
-      projects: 8,
-      achievement:
-        "Analyzed user behavior patterns improving conversion rates by 15%",
-      endorsements: ["Company Operations", "University Statistics Faculty"],
-    },
-    {
-      name: "SQL",
-      level: "expert",
-      category: "data",
-      icon: "🗄️",
-      experience: "4+ years",
-      projects: 10,
-      achievement: "Optimized database queries for large-scale deployments",
-      endorsements: ["Data Team", "Company Analytics"],
-    },
-    {
-      name: "Python",
-      level: "proficient",
-      category: "data",
-      icon: "🐍",
-      experience: "3+ years",
-      projects: 8,
-      achievement: "Built data processing scripts improving efficiency by 30%",
-      endorsements: ["Development Team", "University IT", "Students"],
-    },
-    {
-      name: "Excel",
-      level: "expert",
-      category: "data",
-      icon: "📈",
-      experience: "4+ years",
-      projects: 12,
-      achievement: "Created complex models for business forecasting",
-      endorsements: ["Business Team", "Finance Department"],
-    },
-    {
-      name: "Google Analytics",
-      level: "proficient",
-      category: "data",
-      icon: "📱",
-      experience: "2+ years",
-      projects: 5,
-      achievement: "Set up tracking systems improving marketing ROI by 20%",
-      endorsements: ["Marketing Team", "Digital Partners"],
-    },
-    {
-      name: "Tableau",
-      level: "proficient",
-      category: "data",
-      icon: "📊",
-      experience: "2+ years",
-      projects: 4,
-      achievement:
-        "Created dashboards for executive reporting and decision making",
-      endorsements: ["Business Intelligence Team", "Executive Leadership"],
-    },
-    {
-      name: "A/B Testing",
-      level: "proficient",
-      category: "data",
-      icon: "🧪",
-      experience: "2+ years",
-      projects: 6,
-      achievement: "Ran experiments improving user engagement by 25%",
-      endorsements: ["Product Team", "Data Scientists"],
-    },
-    {
-      name: "Market Research",
-      level: "proficient",
-      category: "data",
-      icon: "🔍",
-      experience: "2+ years",
-      projects: 5,
-      achievement: "Conducted competitive analysis informing product strategy",
-      endorsements: ["Strategy Team", "Industry Analysts"],
-    },
-  ],
-  engineering: [
-    {
-      name: "JavaScript",
-      level: "proficient",
-      category: "engineering",
-      icon: "⚡",
-      experience: "3+ years",
-      projects: 8,
-      achievement: "Built web applications and interactive features",
-      endorsements: ["Web Development Teams", "Frontend Engineers"],
-    },
-    {
-      name: "React/Next.js",
-      level: "proficient",
-      category: "engineering",
-      icon: "⚛️",
-      experience: "2+ years",
-      projects: 5,
-      achievement: "Developed modern web applications and prototypes",
-      endorsements: ["Development Team", "Tech Advisors"],
-    },
-    {
-      name: "TypeScript",
-      level: "familiar",
-      category: "engineering",
-      icon: "📘",
-      experience: "1+ years",
-      projects: 3,
-      achievement: "Enhanced code quality and reduced runtime errors",
-      endorsements: ["Web Development Teams"],
-    },
-    {
-      name: "Node.js",
-      level: "familiar",
-      category: "engineering",
-      icon: "💚",
-      experience: "2+ years",
-      projects: 4,
-      achievement: "Built backend APIs and server-side applications",
-      endorsements: ["Full-Stack Development Teams"],
-    },
-    {
-      name: "Cloud Services",
-      level: "familiar",
-      category: "engineering",
-      icon: "☁️",
-      experience: "2+ years",
-      projects: 3,
-      achievement: "Deployed applications using cloud infrastructure",
-      endorsements: ["Cloud Partners", "Architecture Teams"],
-    },
-    {
-      name: "Git/GitHub",
-      level: "proficient",
-      category: "engineering",
-      icon: "🔀",
-      experience: "3+ years",
-      projects: 12,
-      achievement: "Managed version control for collaborative projects",
-      endorsements: ["Engineering Teams", "Open Source Community"],
-    },
-    {
-      name: "REST APIs",
-      level: "proficient",
-      category: "engineering",
-      icon: "🔌",
-      experience: "2+ years",
-      projects: 6,
-      achievement: "Designed and integrated APIs for web applications",
-      endorsements: ["API Development", "Backend Engineering Teams"],
-    },
-    {
-      name: "HTML/CSS",
-      level: "proficient",
-      category: "engineering",
-      icon: "🌐",
-      experience: "3+ years",
-      projects: 10,
-      achievement: "Created responsive and accessible web interfaces",
-      endorsements: ["Frontend Teams", "Web Developers"],
-    },
-  ],
-  design: [
-    {
-      name: "Figma",
-      level: "proficient",
-      category: "design",
-      icon: "🎨",
-      experience: "2+ years",
-      projects: 6,
-      achievement:
-        "Created wireframes and prototypes improving design consistency",
-      endorsements: ["Design Team", "UX Research Groups"],
-    },
-    {
-      name: "UI/UX Design",
-      level: "proficient",
-      category: "design",
-      icon: "✨",
-      experience: "2+ years",
-      projects: 5,
-      achievement:
-        "Created user-centered designs for web and mobile applications",
-      endorsements: ["Design Teams", "User Experience Researchers"],
-    },
-    {
-      name: "Prototyping",
-      level: "proficient",
-      category: "design",
-      icon: "🔧",
-      experience: "2+ years",
-      projects: 4,
-      achievement: "Built interactive prototypes for product validation",
-      endorsements: ["Innovation Team", "Product Design Leaders"],
-    },
-    {
-      name: "Design Systems",
-      level: "familiar",
-      category: "design",
-      icon: "📐",
-      experience: "1+ years",
-      projects: 2,
-      achievement: "Established consistent design patterns across platforms",
-      endorsements: ["Design System Teams"],
-    },
-    {
-      name: "User Testing",
-      level: "proficient",
-      category: "design",
-      icon: "👥",
-      experience: "2+ years",
-      projects: 3,
-      achievement: "Conducted usability testing improving user satisfaction",
-      endorsements: ["UX Research Teams", "Product Validation Groups"],
-    },
-  ],
-};
+const skillsData = siteConfig.skillsData;
 
 const categories = [
-  { key: "all", label: "All Skills", color: "gray" },
-  { key: "business", label: "Product & Business", color: "gray" },
-  { key: "data", label: "Data & Analytics", color: "gray" },
-  { key: "engineering", label: "Engineering", color: "gray" },
-  { key: "design", label: "Design & UX", color: "gray" },
+  { key: 'all', label: 'All Skills', color: 'gray' },
+  { key: 'business', label: 'Product & Business', color: 'gray' },
+  { key: 'data', label: 'Data & Analytics', color: 'gray' },
+  { key: 'engineering', label: 'Engineering', color: 'gray' },
+  { key: 'design', label: 'Design & UX', color: 'gray' },
 ];
 
 const levels = [
-  { key: "all", label: "All Levels", color: "gray" },
-  { key: "expert", label: "Expert", color: "gray" },
-  { key: "proficient", label: "Proficient", color: "gray" },
-  { key: "familiar", label: "Familiar", color: "gray" },
+  { key: 'all', label: 'All Levels', color: 'gray' },
+  { key: 'expert', label: 'Expert', color: 'gray' },
+  { key: 'proficient', label: 'Proficient', color: 'gray' },
+  { key: 'familiar', label: 'Familiar', color: 'gray' },
 ];
 
 export function SkillsSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
   const prefersReducedMotion = useReducedMotion();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -342,23 +36,23 @@ export function SkillsSection() {
     };
 
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [activeLevel, setActiveLevel] = useState("all");
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeLevel, setActiveLevel] = useState('all');
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const filteredSkills = React.useMemo(() => {
     let skills = Object.values(skillsData).flat();
 
-    if (activeCategory !== "all") {
+    if (activeCategory !== 'all') {
       skills = skills.filter((skill) => skill.category === activeCategory);
     }
 
-    if (activeLevel !== "all") {
+    if (activeLevel !== 'all') {
       skills = skills.filter((skill) => skill.level === activeLevel);
     }
 
@@ -386,7 +80,7 @@ export function SkillsSection() {
       y: 0,
       transition: {
         duration: isMobile ? 0 : prefersReducedMotion ? 0.3 : 0.6,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
@@ -401,38 +95,38 @@ export function SkillsSection() {
       scale: 1,
       transition: {
         duration: isMobile ? 0 : prefersReducedMotion ? 0.2 : 0.4,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
 
   const getLevelBadgeColor = (level: string) => {
     switch (level) {
-      case "expert":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-      case "proficient":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
-      case "familiar":
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+      case 'expert':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+      case 'proficient':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+      case 'familiar':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
     }
   };
 
   const getLevelFilterColor = (level: string, isActive: boolean) => {
     if (isActive) {
       switch (level) {
-        case "expert":
-          return "bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20";
-        case "proficient":
-          return "bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20";
-        case "familiar":
-          return "bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20";
+        case 'expert':
+          return 'bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20';
+        case 'proficient':
+          return 'bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20';
+        case 'familiar':
+          return 'bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20';
         default:
-          return "bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20";
+          return 'bg-gray-600/20 border-gray-500/80 text-gray-600 dark:text-gray-400 shadow-lg shadow-gray-500/20';
       }
     }
-    return "bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50";
+    return 'bg-white/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50';
   };
 
   return (
@@ -450,7 +144,7 @@ export function SkillsSection() {
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={isInView ? 'visible' : 'hidden'}
         className="relative z-10 mx-auto max-w-7xl px-6"
       >
         {/* Section Header */}
@@ -480,8 +174,8 @@ export function SkillsSection() {
                 onClick={() => setActiveCategory(category.key)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                   activeCategory === category.key
-                    ? "bg-white dark:bg-gray-700 text-gray-600 dark:text-white shadow-md"
-                    : "text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50"
+                    ? 'bg-white dark:bg-gray-700 text-gray-600 dark:text-white shadow-md'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50'
                 }`}
               >
                 {category.label}
@@ -514,15 +208,15 @@ export function SkillsSection() {
             {filteredSkills.map((skill, index) => {
               // Create organic cloud positioning with varied sizes - SMALLER SIZES
               const sizes = [
-                "text-xs px-2 py-1",
-                "text-xs px-2 py-1.5",
-                "text-sm px-3 py-1.5",
-                "text-sm px-3 py-2",
+                'text-xs px-2 py-1',
+                'text-xs px-2 py-1.5',
+                'text-sm px-3 py-1.5',
+                'text-sm px-3 py-2',
               ];
               const sizeIndex =
-                skill.level === "expert"
+                skill.level === 'expert'
                   ? 3
-                  : skill.level === "proficient"
+                  : skill.level === 'proficient'
                     ? 2
                     : 1;
               const skillSize = sizes[sizeIndex] || sizes[1];
@@ -530,7 +224,7 @@ export function SkillsSection() {
               return (
                 <motion.div
                   key={skill.name}
-                  id={`skill-${skill.name.toLowerCase().replace(/ /g, "-").replace(/\//g, "-")}`}
+                  id={`skill-${skill.name.toLowerCase().replace(/ /g, '-').replace(/\//g, '-')}`}
                   variants={skillVariants}
                   layout
                   onHoverStart={() => !isMobile && setHoveredSkill(skill.name)}
@@ -562,21 +256,21 @@ export function SkillsSection() {
                       : {}
                   }
                 >
-                  {/* Skill Bubble */}
+                  {/* (typeof skillsData)[string][number] Bubble */}
                   <div
                     className={`relative overflow-hidden rounded-full bg-white dark:bg-gray-800 shadow-lg transition-all duration-300 flex items-center justify-center cursor-pointer border-2 ${skillSize} ${
-                      skill.level === "expert"
-                        ? "border-gray-400 hover:border-gray-500"
-                        : skill.level === "proficient"
-                          ? "border-gray-400 hover:border-gray-500"
-                          : "border-gray-400 hover:border-gray-500"
+                      skill.level === 'expert'
+                        ? 'border-gray-400 hover:border-gray-500'
+                        : skill.level === 'proficient'
+                          ? 'border-gray-400 hover:border-gray-500'
+                          : 'border-gray-400 hover:border-gray-500'
                     } ${
                       !isMobile && !prefersReducedMotion
-                        ? "hover:shadow-xl hover:-translate-y-2 hover:scale-110 hover:shadow-gray-500/20"
-                        : "hover:shadow-lg"
+                        ? 'hover:shadow-xl hover:-translate-y-2 hover:scale-110 hover:shadow-gray-500/20'
+                        : 'hover:shadow-lg'
                     }`}
                   >
-                    {/* Skill Content */}
+                    {/* (typeof skillsData)[string][number] Content */}
                     <div className="flex items-center space-x-1.5">
                       <span className="text-base">{skill.icon}</span>
                       <span className="font-semibold text-gray-800 dark:text-gray-100 whitespace-nowrap">
@@ -589,12 +283,12 @@ export function SkillsSection() {
                   {hoveredSkill === skill.name && (
                     <div
                       className={`fixed bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl text-sm shadow-2xl border border-gray-200 dark:border-gray-600 max-w-xs sm:max-w-sm ${
-                        isMobile ? "inset-x-4 top-20" : ""
+                        isMobile ? 'inset-x-4 top-20' : ''
                       }`}
                       style={
                         isMobile
                           ? {
-                              pointerEvents: "auto",
+                              pointerEvents: 'auto',
                               zIndex: 999999,
                             }
                           : {
@@ -602,10 +296,10 @@ export function SkillsSection() {
                               bottom: window.innerHeight - mousePosition.y,
                               transform: `translate(${
                                 mousePosition.x > window.innerWidth / 2
-                                  ? "-100%"
-                                  : "0%"
+                                  ? '-100%'
+                                  : '0%'
                               }, 0%)`,
-                              pointerEvents: "none",
+                              pointerEvents: 'none',
                               zIndex: 999999,
                             }
                       }
@@ -633,7 +327,7 @@ export function SkillsSection() {
                                 skill.level
                               )}`}
                             >
-                              {skill.level.toUpperCase()} • {skill.experience} •{" "}
+                              {skill.level.toUpperCase()} • {skill.experience} •{' '}
                               {skill.projects}+ projects
                             </div>
                           </div>
@@ -678,12 +372,12 @@ export function SkillsSection() {
                       <div
                         className={`absolute w-0 h-0 border-l-4 border-r-4 border-transparent ${
                           mousePosition.y > window.innerHeight - 200
-                            ? "-top-2 border-b-4 border-b-white dark:border-b-slate-800"
-                            : "-bottom-2 border-t-4 border-t-white dark:border-t-slate-800"
+                            ? '-top-2 border-b-4 border-b-white dark:border-b-slate-800'
+                            : '-bottom-2 border-t-4 border-t-white dark:border-t-slate-800'
                         } ${
                           mousePosition.x > window.innerWidth / 2
-                            ? "right-4"
-                            : "left-4"
+                            ? 'right-4'
+                            : 'left-4'
                         }`}
                       />
                     </div>

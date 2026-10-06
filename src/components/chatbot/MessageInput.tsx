@@ -1,7 +1,8 @@
-"use client";
+'use client';
+import { siteConfig } from '@/config/site';
 
-import React from "react";
-import { FiSend, FiTrash2, FiImage, FiFile, FiMenu } from "react-icons/fi";
+import React from 'react';
+import { FiSend, FiTrash2, FiImage, FiFile, FiMenu } from 'react-icons/fi';
 
 interface MessageInputProps {
   inputValue: string;
@@ -24,9 +25,9 @@ interface MessageInputProps {
 }
 
 function getFileIcon(file: File) {
-  if (file.type.startsWith("image/"))
+  if (file.type.startsWith('image/'))
     return <FiImage className="h-4 w-4 text-blue-500" />;
-  if (file.type.includes("pdf"))
+  if (file.type.includes('pdf'))
     return <FiFile className="h-4 w-4 text-red-500" />;
   return <FiFile className="h-4 w-4 text-gray-500" />;
 }
@@ -101,7 +102,7 @@ export function MessageInput({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e: React.KeyboardEvent<Element>) => {
-              if (e.key === "Enter" && !e.shiftKey) {
+              if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 handleSubmit(e);
               }
@@ -115,8 +116,8 @@ export function MessageInput({
                     inputRef.current.focus();
                     // Scroll to input if needed
                     inputRef.current.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
+                      behavior: 'smooth',
+                      block: 'center',
                     });
                   }
                 }, 50);
@@ -128,31 +129,33 @@ export function MessageInput({
                 setTimeout(() => {
                   if (inputRef.current) {
                     inputRef.current.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
+                      behavior: 'smooth',
+                      block: 'center',
                     });
                   }
                 }, 300); // Delay to account for keyboard animation
               }
             }}
             placeholder={
-              isMobile ? "Ask me anything" : "Ask me anything about YOUR_NAME"
+              isMobile
+                ? 'Ask me anything'
+                : `Ask me anything about ${siteConfig.name}`
             }
             className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500"
             rows={1}
             disabled={isLoading}
             style={{
-              height: isMobile ? "44px" : "52px",
-              lineHeight: "1.4",
-              padding: "12px 16px",
-              maxHeight: isMobile ? "100px" : "120px",
-              boxSizing: "border-box",
-              verticalAlign: "top",
-              fontFamily: "inherit",
-              fontSize: "16px",
-              borderWidth: "1px",
-              minHeight: isMobile ? "44px" : "52px",
-              resize: "none",
+              height: isMobile ? '44px' : '52px',
+              lineHeight: '1.4',
+              padding: '12px 16px',
+              maxHeight: isMobile ? '100px' : '120px',
+              boxSizing: 'border-box',
+              verticalAlign: 'top',
+              fontFamily: 'inherit',
+              fontSize: '16px',
+              borderWidth: '1px',
+              minHeight: isMobile ? '44px' : '52px',
+              resize: 'none',
             }}
           />
         </div>
@@ -167,13 +170,13 @@ export function MessageInput({
             title="Open menu"
             disabled={isLoading}
             style={{
-              width: isMobile ? "44px" : "52px",
-              height: isMobile ? "44px" : "52px",
-              boxSizing: "border-box",
-              borderWidth: "1px",
+              width: isMobile ? '44px' : '52px',
+              height: isMobile ? '44px' : '52px',
+              boxSizing: 'border-box',
+              borderWidth: '1px',
               flexShrink: 0,
-              minWidth: isMobile ? "44px" : "52px",
-              minHeight: isMobile ? "44px" : "52px",
+              minWidth: isMobile ? '44px' : '52px',
+              minHeight: isMobile ? '44px' : '52px',
             }}
           >
             <FiMenu className="h-5 w-5" />
@@ -188,13 +191,13 @@ export function MessageInput({
             className="flex-shrink-0 flex items-center justify-center bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 disabled:from-slate-300 disabled:to-slate-400 text-white rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 disabled:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-xl disabled:shadow-md"
             title="Send message"
             style={{
-              width: isMobile ? "44px" : "52px",
-              height: isMobile ? "44px" : "52px",
-              boxSizing: "border-box",
-              borderWidth: "0px",
+              width: isMobile ? '44px' : '52px',
+              height: isMobile ? '44px' : '52px',
+              boxSizing: 'border-box',
+              borderWidth: '0px',
               flexShrink: 0,
-              minWidth: isMobile ? "44px" : "52px",
-              minHeight: isMobile ? "44px" : "52px",
+              minWidth: isMobile ? '44px' : '52px',
+              minHeight: isMobile ? '44px' : '52px',
             }}
           >
             {isLoading ? (

@@ -1,11 +1,13 @@
-"use client";
+'use client';
+import { trackButtonClick } from '@/lib/analytics';
+import { siteConfig } from '@/config/site';
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useInView } from "framer-motion";
-import { useRef } from "react";
-import Link from "next/link";
-import DatePicker from "react-datepicker";
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useInView } from 'framer-motion';
+import { useRef } from 'react';
+import Link from 'next/link';
+import DatePicker from 'react-datepicker';
 import {
   Mail,
   MessageCircle,
@@ -16,11 +18,11 @@ import {
   AlertCircle,
   Clock,
   Phone,
-} from "lucide-react";
-import { FaLinkedin, FaGithub, FaFacebookF } from "react-icons/fa6";
-import "react-datepicker/dist/react-datepicker.css";
-import { format as formatDate, parse as parseDate } from "date-fns";
-import { FiGithub, FiMail } from "react-icons/fi";
+} from 'lucide-react';
+import { FaLinkedin, FaGithub, FaFacebookF } from 'react-icons/fa6';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format as formatDate, parse as parseDate } from 'date-fns';
+import { FiGithub, FiMail } from 'react-icons/fi';
 
 /**
  * Contact form data interface
@@ -50,9 +52,9 @@ interface MeetingFormData {
  */
 interface ContactSectionProps {
   /** External form type control */
-  externalFormType?: "none" | "message" | "calendar";
+  externalFormType?: 'none' | 'message' | 'calendar';
   /** Callback for form type changes */
-  onFormTypeChange?: (formType: "none" | "message" | "calendar") => void;
+  onFormTypeChange?: (formType: 'none' | 'message' | 'calendar') => void;
   /** Whether tour is active */
   tourActive?: boolean;
 }
@@ -91,110 +93,79 @@ export function ContactSection({
   tourActive = false,
 }: ContactSectionProps = {}) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    company: "",
-    message: "",
+    name: '',
+    email: '',
+    company: '',
+    message: '',
   });
   const [meetingData, setMeetingData] = useState({
-    name: "",
-    email: "",
-    company: "",
+    name: '',
+    email: '',
+    company: '',
     selectedDate: null as Date | null,
-    selectedTime: "",
-    message: "",
-    meetingType: "30min",
+    selectedTime: '',
+    message: '',
+    meetingType: '30min',
   });
   const [submitStatus, setSubmitStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
   const [internalActiveForm, setInternalActiveForm] = useState<
-    "none" | "message" | "calendar"
-  >("message");
+    'none' | 'message' | 'calendar'
+  >('message');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // Use external form type if provided, otherwise use internal state
   const activeForm = externalFormType ?? internalActiveForm;
   const setActiveForm = onFormTypeChange ?? setInternalActiveForm;
 
-  const [lastUpdated, setLastUpdated] = useState(new Date());
-  const [version, setVersion] = useState("1.0.39");
-  const [isClient, setIsClient] = useState(false);
-
-  // Set isClient to true after component mounts to avoid hydration mismatch
-  React.useEffect(() => {
-    setIsClient(true);
-
-    const fetchVersion = async () => {
-      try {
-        const res = await fetch("/api/version", {
-          cache: "no-store", // Prevent caching to get fresh data
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        });
-        const data = await res.json();
-
-        if (data.version) setVersion(data.version);
-        if (data.lastUpdated) setLastUpdated(new Date(data.lastUpdated));
-
-        console.log("📦 Version API Response:", data);
-      } catch (error) {
-        console.error("❌ Version API Error:", error);
-        // Fallback if API is not available
-        setVersion("1.0.41");
-        setLastUpdated(new Date());
-      }
-    };
-
-    fetchVersion();
-
-    // Refresh version data every 30 seconds to catch updates
-    const interval = setInterval(fetchVersion, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitStatus("loading");
+    setSubmitStatus('loading');
 
     try {
-      const response = await fetch("/api/resend-contact", {
-        method: "POST",
+      const response = await fetch('/api/contact', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, subject: 'Portfolio enquiry' }),
       });
 
       if (response.ok) {
-        setSubmitStatus("success");
-        setFormData({ name: "", email: "", company: "", message: "" });
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', company: '', message: '' });
       } else {
-        setSubmitStatus("error");
+        setSubmitStatus('error');
       }
     } catch (error) {
-      setSubmitStatus("error");
+      setSubmitStatus('error');
     }
 
-    setTimeout(() => setSubmitStatus("idle"), 5000);
+    setTimeout(() => setSubmitStatus('idle'), 5000);
   };
 
   const handleMeetingSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitStatus("loading");
+    if (!siteConfig.features.scheduling) {
+      setErrorMessage(
+        'Scheduling is not configured. Please use the email link.'
+      );
+      setSubmitStatus('error');
+      return;
+    }
+    setSubmitStatus('loading');
     setErrorMessage(null);
 
     // Require both date and time
     if (!meetingData.selectedDate || !meetingData.selectedTime) {
-      setErrorMessage("Please select both a date and a time for your meeting.");
-      setSubmitStatus("error");
+      setErrorMessage('Please select both a date and a time for your meeting.');
+      setSubmitStatus('error');
       setTimeout(() => {
-        setSubmitStatus("idle");
+        setSubmitStatus('idle');
         setErrorMessage(null);
       }, 5000);
       return;
@@ -203,31 +174,31 @@ export function ContactSection({
     // Clean up time string: remove any trailing timezone abbreviation
     const cleanTime = meetingData.selectedTime
       // Remove timezone abbreviations (EST, EDT, ET) but keep AM/PM
-      .replace(/\b(EST|EDT|ET)\b/gi, "")
-      .replace(/\s+/g, " ")
+      .replace(/\b(EST|EDT|ET)\b/gi, '')
+      .replace(/\s+/g, ' ')
       .trim();
 
     // Debug: log selected date and cleaned time
-    console.log("[DEBUG] selectedDate:", meetingData.selectedDate);
-    console.log("[DEBUG] selectedTime:", meetingData.selectedTime);
-    console.log("[DEBUG] cleanTime:", cleanTime);
+    console.log('[DEBUG] selectedDate:', meetingData.selectedDate);
+    console.log('[DEBUG] selectedTime:', meetingData.selectedTime);
+    console.log('[DEBUG] cleanTime:', cleanTime);
 
     // Try to parse time in both 24-hour and 12-hour formats
-    let meetingDateTime = "";
-    let meetingDateISO = "";
+    let meetingDateTime = '';
+    let meetingDateISO = '';
     try {
       let dateWithTime: Date | null = null;
       // Try 24-hour format first
       if (/^\d{1,2}:\d{2}$/.test(cleanTime)) {
-        const [hours, minutes] = cleanTime.split(":");
+        const [hours, minutes] = cleanTime.split(':');
         dateWithTime = new Date(meetingData.selectedDate);
         dateWithTime.setHours(Number(hours));
         dateWithTime.setMinutes(Number(minutes));
       } else {
         // Try 12-hour format (e.g., "10:00 AM")
         const parsed = parseDate(
-          `${formatDate(meetingData.selectedDate, "MMMM d, yyyy")} ${cleanTime}`,
-          "MMMM d, yyyy h:mm a",
+          `${formatDate(meetingData.selectedDate, 'MMMM d, yyyy')} ${cleanTime}`,
+          'MMMM d, yyyy h:mm a',
           new Date()
         );
         if (!isNaN(parsed.getTime())) {
@@ -235,15 +206,15 @@ export function ContactSection({
         }
       }
       if (!dateWithTime || isNaN(dateWithTime.getTime())) {
-        throw new Error("Could not parse date/time");
+        throw new Error('Could not parse date/time');
       }
-      meetingDateTime = formatDate(dateWithTime, "MMMM d, yyyy h:mm a");
+      meetingDateTime = formatDate(dateWithTime, 'MMMM d, yyyy h:mm a');
       meetingDateISO = dateWithTime.toISOString();
     } catch (err) {
-      setErrorMessage("Invalid date or time format. Please try again.");
-      setSubmitStatus("error");
+      setErrorMessage('Invalid date or time format. Please try again.');
+      setSubmitStatus('error');
       setTimeout(() => {
-        setSubmitStatus("idle");
+        setSubmitStatus('idle');
         setErrorMessage(null);
       }, 5000);
       return;
@@ -259,38 +230,38 @@ export function ContactSection({
     };
 
     // Debug: log the full payload
-    console.log("[DEBUG] meetingFormData:", meetingFormData);
+    console.log('[DEBUG] meetingFormData:', meetingFormData);
 
     try {
-      const response = await fetch("/api/meeting-request", {
-        method: "POST",
+      const response = await fetch('/api/meeting-request', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(meetingFormData),
       });
       if (response.ok) {
-        setSubmitStatus("success");
+        setSubmitStatus('success');
         setMeetingData({
-          name: "",
-          email: "",
-          company: "",
+          name: '',
+          email: '',
+          company: '',
           selectedDate: null,
-          selectedTime: "",
-          message: "",
-          meetingType: "30min",
+          selectedTime: '',
+          message: '',
+          meetingType: '30min',
         });
       } else {
         const data = await response.json();
-        setErrorMessage(data.error || "An error occurred. Please try again.");
-        setSubmitStatus("error");
+        setErrorMessage(data.error || 'An error occurred. Please try again.');
+        setSubmitStatus('error');
       }
     } catch (error) {
-      setErrorMessage("An error occurred. Please try again.");
-      setSubmitStatus("error");
+      setErrorMessage('An error occurred. Please try again.');
+      setSubmitStatus('error');
     }
     setTimeout(() => {
-      setSubmitStatus("idle");
+      setSubmitStatus('idle');
       setErrorMessage(null);
     }, 5000);
   };
@@ -337,39 +308,39 @@ export function ContactSection({
           y: 0,
           transition: {
             duration: 0.6,
-            ease: "easeOut",
+            ease: 'easeOut',
           },
         },
       };
 
   const socialLinks = {
     github: {
-      url: "YOUR_GITHUB_URL",
+      url: siteConfig.links.github,
       icon: <FiGithub className="h-5 w-5" />,
-      label: "GitHub",
-      color: "#333",
-      description: "View my GitHub repositories",
-      title: "GitHub: YOUR_GITHUB_URL",
+      label: 'GitHub',
+      color: '#333',
+      description: 'View my GitHub repositories',
+      title: `GitHub: ${siteConfig.links.github}`,
     },
     email: {
-      url: "mailto:YOUR_EMAIL",
+      url: `mailto:${siteConfig.email}`,
       icon: <FiMail className="h-5 w-5" />,
-      label: "Email",
-      title: "Email: YOUR_EMAIL",
-      color: "#2563eb",
-      description: "Send me an email",
+      label: 'Email',
+      title: `Email: ${siteConfig.email}`,
+      color: '#2563eb',
+      description: 'Send me an email',
     },
     // Add more social links as needed, each with a color, description, and title property
   };
 
   const contactMethods = [
     {
-      title: "Send Message",
-      description: "For general inquiries and collaboration opportunities",
+      title: 'Send Message',
+      description: 'For general inquiries and collaboration opportunities',
       icon: Mail,
-      action: "message",
-      buttonText: "Send Message",
-      color: "from-gray-500 to-gray-600",
+      action: 'message',
+      buttonText: 'Send Message',
+      color: 'from-gray-500 to-gray-600',
     },
   ];
 
@@ -388,7 +359,7 @@ export function ContactSection({
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
+        animate={isInView ? 'visible' : 'hidden'}
         className="relative z-10 mx-auto max-w-7xl px-6"
       >
         {/* Section Header */}
@@ -427,15 +398,15 @@ export function ContactSection({
                     whileHover={{ scale: 1.02 }}
                     className={`group relative overflow-hidden rounded-2xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl cursor-pointer ${
                       isActive
-                        ? "bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700"
-                        : "bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        ? 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700'
+                        : 'bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800'
                     }`}
                     onClick={() => {
                       if (
-                        method.action === "message" ||
-                        method.action === "calendar"
+                        method.action === 'message' ||
+                        method.action === 'calendar'
                       ) {
-                        setActiveForm(method.action as "message" | "calendar");
+                        setActiveForm(method.action as 'message' | 'calendar');
                       }
                     }}
                   >
@@ -454,8 +425,8 @@ export function ContactSection({
                         <h4
                           className={`text-lg font-semibold mb-2 transition-colors duration-200 ${
                             isActive
-                              ? "text-black dark:text-white"
-                              : "text-black dark:text-white"
+                              ? 'text-black dark:text-white'
+                              : 'text-black dark:text-white'
                           }`}
                         >
                           {method.title}
@@ -463,53 +434,27 @@ export function ContactSection({
                         <p
                           className={`text-sm mb-4 transition-colors duration-200 ${
                             isActive
-                              ? "text-gray-600 dark:text-gray-300"
-                              : "text-gray-600 dark:text-gray-300"
+                              ? 'text-gray-600 dark:text-gray-300'
+                              : 'text-gray-600 dark:text-gray-300'
                           }`}
                         >
                           {method.description}
                         </p>
-                        {method.action === "message" ||
-                        method.action === "calendar" ? (
+                        {method.action === 'message' ||
+                        method.action === 'calendar' ? (
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={async (e) => {
                               e.stopPropagation();
                               setActiveForm(
-                                method.action as "message" | "calendar"
+                                method.action as 'message' | 'calendar'
                               );
 
-                              // Track button clicks
-                              try {
-                                const buttonType =
-                                  method.action === "message"
-                                    ? "direct_email"
-                                    : "schedule_meeting";
-                                const sessionId =
-                                  sessionStorage.getItem("sessionId") ||
-                                  localStorage.getItem("sessionId") ||
-                                  "contact-" + Date.now();
-
-                                await fetch("/api/track-button-v2", {
-                                  method: "POST",
-                                  headers: {
-                                    "Content-Type": "application/json",
-                                  },
-                                  body: JSON.stringify({
-                                    buttonType,
-                                    buttonText: method.buttonText,
-                                    page: "contact",
-                                    sessionId,
-                                    userAgent: navigator.userAgent,
-                                  }),
-                                });
-                              } catch (error) {
-                                console.error(
-                                  "Failed to track button click:",
-                                  error
-                                );
-                              }
+                              await trackButtonClick(
+                                method.action,
+                                method.buttonText
+                              );
                             }}
                             className={`inline-flex items-center space-x-2 rounded-lg px-6 py-3 text-sm font-medium text-white transition-all duration-200 ${
                               isActive
@@ -518,7 +463,7 @@ export function ContactSection({
                             }`}
                           >
                             <span>
-                              {isActive ? "✓ Active" : method.buttonText}
+                              {isActive ? '✓ Active' : method.buttonText}
                             </span>
                             <motion.div
                               animate={{ rotate: isActive ? 180 : 0 }}
@@ -531,13 +476,13 @@ export function ContactSection({
                           <Link
                             href={method.action}
                             target={
-                              method.action.startsWith("http")
-                                ? "_blank"
+                              method.action.startsWith('http')
+                                ? '_blank'
                                 : undefined
                             }
                             rel={
-                              method.action.startsWith("http")
-                                ? "noopener noreferrer"
+                              method.action.startsWith('http')
+                                ? 'noopener noreferrer'
                                 : undefined
                             }
                             className={`inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r ${method.color} px-6 py-3 text-sm font-medium text-white transition-all duration-200 hover:shadow-lg`}
@@ -551,7 +496,7 @@ export function ContactSection({
                     {isActive && (
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: "100%" }}
+                        animate={{ width: '100%' }}
                         transition={{ duration: 0.3 }}
                         className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-blue-500 to-purple-500"
                       />
@@ -578,13 +523,13 @@ export function ContactSection({
                 </p>
               </div>
               <p className="text-xs text-blue-600 dark:text-blue-400">
-                Currently showing:{" "}
-                <span className="font-semibold capitalize">{activeForm}</span>{" "}
+                Currently showing:{' '}
+                <span className="font-semibold capitalize">{activeForm}</span>{' '}
                 form
               </p>
             </motion.div>
 
-            {activeForm === "none" && (
+            {activeForm === 'none' && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -602,11 +547,11 @@ export function ContactSection({
                       <span className="text-3xl">🎯</span>
                     </motion.div>
                     <h3 className="mb-4 text-2xl font-bold text-slate-900 dark:text-white">
-                      Finish the Tour to Contact YOUR_NAME!
+                      Finish the Tour to Contact {siteConfig.name}!
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300 mb-6">
                       Complete the PM experience to unlock full contact options
-                      and connect with YOUR_NAME directly.
+                      and connect with {siteConfig.name} directly.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
                       <div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
@@ -629,20 +574,20 @@ export function ContactSection({
             )}
 
             <AnimatePresence mode="wait">
-              {activeForm === "message" && (
+              {activeForm === 'message' && (
                 <motion.div
                   key="message-form"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
                 >
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                       Send a Message
                     </h3>
                     <button
-                      onClick={() => setActiveForm("none")}
+                      onClick={() => setActiveForm('none')}
                       className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                     >
                       ×
@@ -728,50 +673,50 @@ export function ContactSection({
                     {/* Submit Button */}
                     <motion.button
                       type="submit"
-                      disabled={submitStatus === "loading"}
+                      disabled={submitStatus === 'loading'}
                       whileHover={{
-                        scale: submitStatus === "loading" ? 1 : 1.02,
+                        scale: submitStatus === 'loading' ? 1 : 1.02,
                       }}
                       whileTap={{
-                        scale: submitStatus === "loading" ? 1 : 0.98,
+                        scale: submitStatus === 'loading' ? 1 : 0.98,
                       }}
                       className={`w-full rounded-lg px-6 py-4 font-semibold text-white dark:text-black transition-all duration-300 ${
-                        submitStatus === "loading"
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : submitStatus === "success"
-                            ? "bg-gray-600 hover:bg-gray-700"
-                            : submitStatus === "error"
-                              ? "bg-gray-600 hover:bg-gray-700"
-                              : "bg-black dark:bg-white hover:shadow-lg"
+                        submitStatus === 'loading'
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : submitStatus === 'success'
+                            ? 'bg-gray-600 hover:bg-gray-700'
+                            : submitStatus === 'error'
+                              ? 'bg-gray-600 hover:bg-gray-700'
+                              : 'bg-black dark:bg-white hover:shadow-lg'
                       }`}
                     >
                       <div className="flex items-center justify-center space-x-2">
-                        {submitStatus === "loading" && (
+                        {submitStatus === 'loading' && (
                           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         )}
-                        {submitStatus === "success" && (
+                        {submitStatus === 'success' && (
                           <CheckCircle className="h-5 w-5" />
                         )}
-                        {submitStatus === "error" && (
+                        {submitStatus === 'error' && (
                           <AlertCircle className="h-5 w-5" />
                         )}
-                        {submitStatus === "idle" && (
+                        {submitStatus === 'idle' && (
                           <Send className="h-5 w-5" />
                         )}
                         <span>
-                          {submitStatus === "loading"
-                            ? "Sending..."
-                            : submitStatus === "success"
-                              ? "Message Sent!"
-                              : submitStatus === "error"
-                                ? "Try Again"
-                                : "Send Message"}
+                          {submitStatus === 'loading'
+                            ? 'Sending...'
+                            : submitStatus === 'success'
+                              ? 'Message Sent!'
+                              : submitStatus === 'error'
+                                ? 'Try Again'
+                                : 'Send Message'}
                         </span>
                       </div>
                     </motion.button>
 
                     {/* Status Messages */}
-                    {submitStatus === "success" && (
+                    {submitStatus === 'success' && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -786,7 +731,7 @@ export function ContactSection({
                       </motion.div>
                     )}
 
-                    {submitStatus === "error" && (
+                    {submitStatus === 'error' && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -796,7 +741,7 @@ export function ContactSection({
                           <AlertCircle className="h-5 w-5" />
                           <span>
                             {errorMessage ||
-                              "Something went wrong. Please try again or email me directly."}
+                              'Something went wrong. Please try again or email me directly.'}
                           </span>
                         </div>
                       </motion.div>
@@ -805,25 +750,31 @@ export function ContactSection({
                 </motion.div>
               )}
 
-              {activeForm === "calendar" && (
+              {activeForm === 'calendar' && (
                 <motion.div
                   key="calendar-form"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
                 >
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
                       Schedule a Meeting
                     </h3>
                     <button
-                      onClick={() => setActiveForm("none")}
+                      onClick={() => setActiveForm('none')}
                       className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                     >
                       ×
                     </button>
                   </div>
+                  {!siteConfig.features.scheduling && (
+                    <p role="status" className="mb-4 text-sm text-gray-500">
+                      Scheduling is not configured. Please use the email link to
+                      arrange a time.
+                    </p>
+                  )}
                   <form onSubmit={handleMeetingSubmit} className="space-y-6">
                     <div className="grid gap-6 sm:grid-cols-2">
                       <div>
@@ -973,50 +924,50 @@ export function ContactSection({
                     {/* Submit Button */}
                     <motion.button
                       type="submit"
-                      disabled={submitStatus === "loading"}
+                      disabled={submitStatus === 'loading'}
                       whileHover={{
-                        scale: submitStatus === "loading" ? 1 : 1.02,
+                        scale: submitStatus === 'loading' ? 1 : 1.02,
                       }}
                       whileTap={{
-                        scale: submitStatus === "loading" ? 1 : 0.98,
+                        scale: submitStatus === 'loading' ? 1 : 0.98,
                       }}
                       className={`w-full rounded-lg px-6 py-4 font-semibold text-white transition-all duration-300 ${
-                        submitStatus === "loading"
-                          ? "bg-slate-400 cursor-not-allowed"
-                          : submitStatus === "success"
-                            ? "bg-green-600 hover:bg-green-700"
-                            : submitStatus === "error"
-                              ? "bg-red-600 hover:bg-red-700"
-                              : "bg-gradient-to-r from-green-600 to-blue-600 hover:shadow-lg hover:shadow-green-500/25"
+                        submitStatus === 'loading'
+                          ? 'bg-slate-400 cursor-not-allowed'
+                          : submitStatus === 'success'
+                            ? 'bg-green-600 hover:bg-green-700'
+                            : submitStatus === 'error'
+                              ? 'bg-red-600 hover:bg-red-700'
+                              : 'bg-gradient-to-r from-green-600 to-blue-600 hover:shadow-lg hover:shadow-green-500/25'
                       }`}
                     >
                       <div className="flex items-center justify-center space-x-2">
-                        {submitStatus === "loading" && (
+                        {submitStatus === 'loading' && (
                           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         )}
-                        {submitStatus === "success" && (
+                        {submitStatus === 'success' && (
                           <CheckCircle className="h-5 w-5" />
                         )}
-                        {submitStatus === "error" && (
+                        {submitStatus === 'error' && (
                           <AlertCircle className="h-5 w-5" />
                         )}
-                        {submitStatus === "idle" && (
+                        {submitStatus === 'idle' && (
                           <Calendar className="h-5 w-5" />
                         )}
                         <span>
-                          {submitStatus === "loading"
-                            ? "Scheduling..."
-                            : submitStatus === "success"
-                              ? "Meeting Requested!"
-                              : submitStatus === "error"
-                                ? "Try Again"
-                                : "Request Meeting"}
+                          {submitStatus === 'loading'
+                            ? 'Scheduling...'
+                            : submitStatus === 'success'
+                              ? 'Meeting Requested!'
+                              : submitStatus === 'error'
+                                ? 'Try Again'
+                                : 'Request Meeting'}
                         </span>
                       </div>
                     </motion.button>
 
                     {/* Status Messages */}
-                    {submitStatus === "success" && (
+                    {submitStatus === 'success' && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -1032,7 +983,7 @@ export function ContactSection({
                       </motion.div>
                     )}
 
-                    {submitStatus === "error" && (
+                    {submitStatus === 'error' && (
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -1042,7 +993,7 @@ export function ContactSection({
                           <AlertCircle className="h-5 w-5" />
                           <span>
                             {errorMessage ||
-                              "Something went wrong. Please try again or email me directly."}
+                              'Something went wrong. Please try again or email me directly.'}
                           </span>
                         </div>
                       </motion.div>
@@ -1116,9 +1067,9 @@ export function ContactSection({
 
                 <button
                   onClick={() => {
-                    setActiveForm("message");
+                    setActiveForm('message');
                     // Scroll to the contact form
-                    const contactSection = document.getElementById("contact");
+                    const contactSection = document.getElementById('contact');
                     if (contactSection) {
                       const elementPosition =
                         contactSection.getBoundingClientRect().top;
@@ -1126,7 +1077,7 @@ export function ContactSection({
                         elementPosition + window.pageYOffset - 120;
                       window.scrollTo({
                         top: offsetPosition,
-                        behavior: "smooth",
+                        behavior: 'smooth',
                       });
                     }
                   }}
@@ -1142,30 +1093,11 @@ export function ContactSection({
                 {/* Copyright and Description */}
                 <div>
                   <p className="font-medium text-gray-300">
-                    &copy; {new Date().getFullYear()} YOUR_NAME. All rights
-                    reserved.
+                    &copy; {new Date().getFullYear()} {siteConfig.name}. All
+                    rights reserved.
                   </p>
                   <p className="mt-1 text-sm font-medium text-gray-300">
-                    Building AI products that solve real problems.
-                  </p>
-                </div>
-
-                {/* Version and Update Info */}
-                <div className="text-xs">
-                  <p>
-                    Last updated:{" "}
-                    {isClient &&
-                      lastUpdated.toLocaleString("en-US", {
-                        timeZone: "America/New_York",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        hour12: false,
-                      })}{" "}
-                    EST • Version {isClient ? version : ""}
+                    {siteConfig.description}
                   </p>
                 </div>
 
@@ -1174,21 +1106,21 @@ export function ContactSection({
                   <p className="text-xs">
                     <span className="font-medium text-gray-300">
                       Built with:
-                    </span>{" "}
+                    </span>{' '}
                     <span className="font-medium text-blue-400">
                       Next.js 14
-                    </span>{" "}
-                    •{" "}
-                    <span className="font-medium text-blue-400">React 18</span>{" "}
-                    •{" "}
+                    </span>{' '}
+                    •{' '}
+                    <span className="font-medium text-blue-400">React 18</span>{' '}
+                    •{' '}
                     <span className="font-medium text-blue-400">
                       TypeScript
-                    </span>{" "}
-                    •{" "}
+                    </span>{' '}
+                    •{' '}
                     <span className="font-medium text-blue-400">
                       TailwindCSS
-                    </span>{" "}
-                    •{" "}
+                    </span>{' '}
+                    •{' '}
                     <span className="font-medium text-blue-400">
                       Framer Motion
                     </span>
@@ -1196,7 +1128,7 @@ export function ContactSection({
                   <p className="mt-1 text-xs opacity-80">
                     <span className="font-medium text-gray-300">
                       Powered by:
-                    </span>{" "}
+                    </span>{' '}
                     OpenAI API • Firebase • Resend • Recharts • Lenis Smooth
                     Scroll • React DatePicker
                   </p>
