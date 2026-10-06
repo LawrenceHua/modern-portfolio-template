@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - main
-      - revert-test-main
     paths-ignore:
       - "package.json" # Prevent infinite loops
 
 jobs:
   version:
+    # Forks and repos generated from this template must not commit as the owner.
+    if: github.repository == 'LawrenceHua/modern-portfolio-template'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -34,6 +35,6 @@ jobs:
         with:
           commit_message: "chore: Bump version [skip ci]"
           file_pattern: "package.json"
-          commit_user_name: "GitHub Actions"
-          commit_user_email: "actions@github.com"
-          commit_author: "GitHub Actions <actions@github.com>"
+          commit_user_name: "Lawrence Hua"
+          commit_user_email: "lawrencehua2@gmail.com"
+          commit_author: "Lawrence Hua <lawrencehua2@gmail.com>"
