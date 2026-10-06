@@ -1,5 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+// jest.setup.js registers the matchers at runtime but lies outside the tsconfig
+// program, so import the package here to load its matcher types for tsc.
+import '@testing-library/jest-dom';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { siteConfig } from './site';
@@ -23,9 +26,10 @@ jest.mock('framer-motion', () => {
     motion: new Proxy(
       {},
       {
-        get:
-          (_, tag) =>
-          ({
+        get: (_, tag) => {
+          // Like a plain object, return nothing for symbol keys.
+          if (typeof tag !== 'string') return undefined;
+          return ({
             children,
             className,
             id,
@@ -34,12 +38,13 @@ jest.mock('framer-motion', () => {
             onClick,
             type,
             disabled,
-          }: Record<string, unknown>) =>
+          }: React.PropsWithChildren<Record<string, unknown>>) =>
             React.createElement(
               tag,
               { className, id, style, href, onClick, type, disabled },
               children
-            ),
+            );
+        },
       }
     ),
     AnimatePresence: ({ children }: { children: React.ReactNode }) => children,
@@ -90,8 +95,15 @@ it('ships real local placeholder assets for configured images', () => {
 });
 
 it('shows an honest unavailable state for unconfigured scheduling', () => {
+  // ContactSection's props parameter defaults to {}, making it optional, so
+  // createElement can't infer its props. Name them from its signature.
+  type ContactProps = NonNullable<Parameters<typeof ContactSection>[0]>;
   expect(siteConfig.features.scheduling).toBe(false);
-  render(React.createElement(ContactSection, { externalFormType: 'calendar' }));
+  render(
+    React.createElement<ContactProps>(ContactSection, {
+      externalFormType: 'calendar',
+    })
+  );
   expect(screen.getByRole('status')).toHaveTextContent(
     'Scheduling is not configured'
   );

@@ -6,7 +6,7 @@ on:
       - main
       - revert-test-main
     paths-ignore:
-      - "portfolio/package.json" # Prevent infinite loops
+      - "package.json" # Prevent infinite loops
 
 jobs:
   version:
@@ -23,25 +23,17 @@ jobs:
       - name: "Setup Node.js"
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version-file: ".nvmrc"
 
-      - name: "Setup pnpm"
-        uses: pnpm/action-setup@v2
-        with:
-          version: 9.15.4
-
-      - name: "Install dependencies"
-        run: pnpm install
-
+      # scripts/version.js only uses node:fs and node:path, so no install step.
       - name: "Increment version"
-        working-directory: ./portfolio
         run: node scripts/version.js
 
       - name: "Commit and push changes"
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "chore: Bump version [skip ci]"
-          file_pattern: "portfolio/package.json"
+          file_pattern: "package.json"
           commit_user_name: "GitHub Actions"
           commit_user_email: "actions@github.com"
           commit_author: "GitHub Actions <actions@github.com>"
